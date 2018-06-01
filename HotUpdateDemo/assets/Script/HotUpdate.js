@@ -1,28 +1,32 @@
-
+const ErrCode = cc.Enum({
+    laodManifestFailed: 0, //下载manifest失败
+    updateFailed: 1, //更新失败，
+});
 cc.Class({
     extends: cc.Component,
 
     properties: {
         manifestUrl: cc.RawAsset,
-    },
-
-    // LIFE-CYCLE CALLBACKS:
-
-    onLoad() {
-
-        this.init();
-        this.checkUpdate();
+        _hotUpdateName: 'game-remote-asset'
     },
 
     /**
-     * 初始化
+     * 
+     * @param {*} nextFn 
      */
-    init() {
-        this._storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + 'blackjack-remote-asset');
+    init(nextFn, progressFn, failedFn) {
+        this.nextFn = nextFn;
+        this.progressFn = progressFn;
+        this.failedFn = failedFn;
+        if ((cc.sys.os != cc.sys.OS_ANDROID) || (cc.sys.os != cc.sys.OS_IOS)) {
+            console.log('is not OS_ANDROID or OS_IOS');
+            nextFn();
+            return;
+        }
+        this._storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + this._hotUpdateName);
         cc.log('Storage path for remote asset : ' + this._storagePath);
-
         this.versionCompareHandle = function (versionA, versionB) {
-            console.log('versionA=' + versionA + ' versionB=' + versionB);
+            console.log('versionLocal=' + versionA + ' versionRemote=' + versionB);
             var vA = versionA.split('.');
             var vB = versionB.split('.');
             for (var i = 0; i < vA.length; ++i) {
@@ -30,15 +34,13 @@ cc.Class({
                 var b = parseInt(vB[i] || 0);
                 if (a === b) {
                     continue;
-                }
-                else {
+                } else {
                     return a - b;
                 }
             }
             if (vB.length > vA.length) {
                 return -1;
-            }
-            else {
+            } else {
                 return 0;
             }
         };
@@ -52,8 +54,7 @@ cc.Class({
             var compressed = asset.compressed;
             if (compressed) {
                 return true;
-            }
-            else {
+            } else {
                 return true;
             }
         });
@@ -61,26 +62,44 @@ cc.Class({
         if (cc.sys.os === cc.sys.OS_ANDROID) {
             this._am.setMaxConcurrentTask(2);
         }
+        //检查是否为最新
+        this.checkUpdate();
     },
 
     //热更新完成 or 不需要热更新 进入游戏
     onEnterGame: function () {
-
+        this.nextFn();
     },
+
+    /**
+     * 下载文件进度
+     */
+    onDownloadProgess(byteProgress, fileProgress) {
+        if (this.progressFn) this.progressFn(fileProgress, byteProgress);
+    },
+
+    /**
+     * 热更新过程中，出现问题
+     * @param {*} type 0为检查更新过程，1为下载文件过程
+     * @param {*} err 
+     */
+    onFailure(type) {
+        console.log('type=', type, 'err=', err);
+        if (this.failedFn) this.failedFn(type);
+    },
+
     /**
      * 检查更新
      */
     checkUpdate: function () {
         console.log('start checkUpdate');
-        // if (this._updating) {
-        //     // this.panel.info.string = 'Checking or updating ...';
-        //     return;
-        // }
         if (this._am.getState() === jsb.AssetsManager.State.UNINITED) {
             this._am.loadLocalManifest(this.manifestUrl);
         }
         if (!this._am.getLocalManifest() || !this._am.getLocalManifest().isLoaded()) {
-            this.panel.info.string = 'Failed to load local manifest ...';
+
+            this.onFailure(ErrCode.laodManifestFailed);
+            // this.panel.info.string = 'Failed to load local manifest ...';
             return;
         }
         this._checkListener = new jsb.EventListenerAssetsManager(this._am, this.checkCb.bind(this));
@@ -119,7 +138,7 @@ cc.Class({
                 console.log('ERROR_NO_LOCAL_MANIFEST');
                 break;
             case jsb.EventAssetsManager.ERROR_DOWNLOAD_MANIFEST:
-            /*1下载配置文件错误*/
+                /*1下载配置文件错误*/
             case jsb.EventAssetsManager.ERROR_PARSE_MANIFEST:
                 /*2 解析文件错误*/
                 console.log('ERROR_PARSE_MANIFEST');
@@ -161,8 +180,7 @@ cc.Class({
                 break;
             case jsb.EventAssetsManager.UPDATE_PROGRESSION:
                 //显示进度
-                // this.panel.byteProgress.progress = event.getPercent();
-                // this.panel.fileProgress.progress = event.getPercentByFile();
+                this.onDownloadProgess(event.getPercent(), event.getPercentByFile());
                 break;
             case jsb.EventAssetsManager.ERROR_DOWNLOAD_MANIFEST:
             case jsb.EventAssetsManager.ERROR_PARSE_MANIFEST:
@@ -179,9 +197,8 @@ cc.Class({
                 break;
             case jsb.EventAssetsManager.UPDATE_FAILED:
                 // this.panel.info.string = 'Update failed. ' + event.getMessage();
-                // this.panel.retryBtn.active = true;
                 this._updating = false;
-                this._canRetry = true;
+                failed = true;
                 break;
             case jsb.EventAssetsManager.ERROR_UPDATING:
                 // this.panel.info.string = 'Asset update error: ' + event.getAssetId() + ', ' + event.getMessage();
@@ -199,6 +216,7 @@ cc.Class({
             cc.eventManager.removeListener(this._updateListener);
             this._updateListener = null;
             this._updating = false;
+            this.onFailure(ErrCode.updateFailed);
         }
 
         if (needRestart) {
@@ -207,9 +225,7 @@ cc.Class({
             this._updateListener = null;
             var searchPaths = jsb.fileUtils.getSearchPaths();
             var newPaths = this._am.getLocalManifest().getSearchPaths();
-            // console.log(JSON.stringify(newPaths));
             Array.prototype.unshift(searchPaths, newPaths);
-
             cc.sys.localStorage.setItem('HotUpdateSearchPaths', JSON.stringify(searchPaths));
             jsb.fileUtils.setSearchPaths(searchPaths);
             cc.audioEngine.stopAll();

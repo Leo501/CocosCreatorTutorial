@@ -361,7 +361,7 @@
     },
     "_enabled": true,
     "_useOriginalSize": false,
-    "_actualFontSize": 40,
+    "_actualFontSize": 60,
     "_fontSize": 60,
     "_lineHeight": 60,
     "_enableWrapText": true,
@@ -413,6 +413,7 @@
     "_enabled": true,
     "manifestUrl": {
       "__uuid__": "2857653b-09b5-4724-a067-615f6905fbc2"
-    }
+    },
+    "_hotUpdateName": "game-remote-asset"
   }
 ]

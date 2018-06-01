@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "77a775bb-5d6e-46e5-97fc-0cdd1655bc8b",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "parheart-girl": {
+      "ver": "1.0.3",
+      "uuid": "42de844a-b6fe-4f87-afb6-c163c48bcd57",
+      "rawTextureUuid": "77a775bb-5d6e-46e5-97fc-0cdd1655bc8b",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 2,
+      "trimX": 6,
+      "trimY": 6,
+      "width": 116,
+      "height": 112,
+      "rawWidth": 128,
+      "rawHeight": 128,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

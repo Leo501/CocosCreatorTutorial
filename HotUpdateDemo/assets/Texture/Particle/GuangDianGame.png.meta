@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "552ea113-2682-44b7-ae52-0670508a29c7",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "GuangDianGame": {
+      "ver": "1.0.3",
+      "uuid": "29b25444-becb-4ffa-a127-24e6f01c8ae4",
+      "rawTextureUuid": "552ea113-2682-44b7-ae52-0670508a29c7",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 64,
+      "height": 64,
+      "rawWidth": 64,
+      "rawHeight": 64,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}
