@@ -23,21 +23,24 @@ cc.Class({
         this.grid.node.active = false;
         var node = this.node.getChildByName(customData);
         switch (node.name) {
-            case 'horizontal': {
-                this.horizontal.node.active = true;
-                this.onAddItem(this.horizontal, this.item);
-                break;
-            }
-            case 'vertical': {
-                this.vertical.node.active = true;
-                this.onAddItem(this.vertical, this.item);
-                break;
-            }
-            case 'grid': {
-                this.grid.node.active = true;
-                this.onAddItem(this.grid, this.item);
-                break;
-            }
+            case 'horizontal':
+                {
+                    this.horizontal.node.active = true;
+                    this.onAddItem(this.horizontal, this.item);
+                    break;
+                }
+            case 'vertical':
+                {
+                    this.vertical.node.active = true;
+                    this.onAddItem(this.vertical, this.item);
+                    break;
+                }
+            case 'grid':
+                {
+                    this.grid.node.active = true;
+                    this.onAddItem(this.grid, this.item);
+                    break;
+                }
         }
     },
 
@@ -46,6 +49,15 @@ cc.Class({
         var contentNode = scrollView.node.getChildByName('view').getChildByName('content');
         var child = cc.instantiate(item);
         contentNode.addChild(child);
+    },
+
+    onEventScrollView(event, eventType) {
+        console.log('eventType=', eventType, cc.ScrollView.EventType);
+        //当滑动到最后，添加一个
+        if (cc.ScrollView.EventType.AUTOSCROLL_ENDED_WITH_THRESHOLD == eventType) {
+            console.log('aa');
+            this.onAddItem(this.vertical, this.item);
+        }
     },
 
     // called every frame
