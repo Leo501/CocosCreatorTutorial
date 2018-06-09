@@ -1,0 +1,33 @@
+{
+  "appKey": "EC26512D-0C24-60EB-D924-2A8294F8A877",
+  "appSecret": "e6713b629221488ae1a4839daba93b9d",
+  "encryptJs": true,
+  "excludeScenes": [],
+  "includeAnySDK": true,
+  "includeSDKBox": false,
+  "inlineSpriteFrames": true,
+  "inlineSpriteFrames_native": true,
+  "jailbreakPlatform": false,
+  "md5Cache": false,
+  "mergeStartScene": false,
+  "oauthLoginServer": "http://oauth.anysdk.com/api/User/LoginOauth/",
+  "optimizeHotUpdate": false,
+  "orientation": {
+    "landscapeLeft": true,
+    "landscapeRight": true,
+    "portrait": false,
+    "upsideDown": false
+  },
+  "packageName": "com.qipinqipai.jiutian",
+  "privateKey": "B960ACE38FFA6501C038354406512CE7",
+  "renderMode": "0",
+  "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
+  "title": "zoe78",
+  "webOrientation": "auto",
+  "wechatgame": {
+    "appid": "wx6ac3f5090a6b99c5",
+    "orientation": "portrait"
+  },
+  "xxteaKey": "5b843823-df4d-40",
+  "zipCompressJs": true
+}
