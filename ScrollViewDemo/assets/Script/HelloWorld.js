@@ -6,6 +6,7 @@ cc.Class({
         vertical: cc.ScrollView,
         grid: cc.ScrollView,
         item: cc.Node,
+        aa:cc.SpriteAtlas
     },
 
     // use this for initialization
@@ -14,6 +15,11 @@ cc.Class({
         this.horizontal.node.active = true;
         this.vertical.node.active = false;
         this.grid.node.active = false;
+        this.node.removeAllChildren();
+        cc.instantiate();
+        parseInt();
+        let node= new cc.Node();
+        node.setPositionX();
     },
 
     onBtnClicked(event, customData) {
