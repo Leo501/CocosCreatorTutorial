@@ -27,6 +27,7 @@ cc.Class({
         emitter.on('test_2', this.onTest_2);
         emitter.emit('test_1', 1, 1, 1);
         emitter.emit('test_2', 1, 1, 1);
+        emitter.off('test_1', this.onTest_1);
     },
 
 

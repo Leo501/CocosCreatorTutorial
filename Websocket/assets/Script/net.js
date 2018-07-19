@@ -1,14 +1,11 @@
-import { parse } from "path";
-import { eventNames } from "cluster";
-
 let netConfig = {};
 netConfig.host = 'localhost';
 netConfig.port = '8181';
 
 var NetControl = {
-    _sock: {},  //当前的webSocket的对象
-    sendTempArr: [],//发送数组
-    handlers: [],//
+    _sock: {}, //当前的webSocket的对象
+    sendTempArr: [], //发送数组
+    handlers: [], //
     connect() {
         if (this._sock.readyState !== 1) {
             //重新连接
@@ -50,7 +47,10 @@ var NetControl = {
     },
 
     send(event, data) {
-        let newData = JSON.stringify({ event: event, data: data });
+        let newData = JSON.stringify({
+            event: event,
+            data: data
+        });
         //是否能发送
         if (this._sock.readyState !== 1) {
             console.log('sendTempArr');
@@ -67,7 +67,7 @@ var NetControl = {
      * @param {*} fn 
      */
     addHandler(event, fn) {
-        console.log('addHandler',event);
+        console.log('addHandler', event);
         if (this.handlers[event]) {
             console.log("event:" + event + "' handler has been registered.");
             return;
@@ -82,7 +82,7 @@ var NetControl = {
     },
 
     removeHandler(event) {
-        console.log('removeHandler',event);
+        console.log('removeHandler', event);
         let handler = this.handlers[event];
         if (handler) {
             handler = null;
@@ -90,7 +90,7 @@ var NetControl = {
     },
 
     removeAllHandler() {
-        console.log('removeAllHandler',event);
+        console.log('removeAllHandler', event);
         this.handlers = {};
 
     },
