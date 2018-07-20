@@ -37,7 +37,7 @@ Emitter.prototype.on =
             callBack.fn = fn;
         }
         (this._callbacks[event] = this._callbacks[event] || [])
-            .push(callBack);
+        .push(callBack);
         return this;
     };
 
@@ -54,7 +54,8 @@ Emitter.prototype.once = function (event, fn, context) {
         if (arguments.length == 3) {
             fn.apply(context, arguments);
         } else {
-            fn(arguments);
+            fn.apply(this, arguments);
+            // fn(arguments);
         }
     }
 
@@ -107,14 +108,14 @@ Emitter.prototype.off =
 
 Emitter.prototype.emit = function (event) {
     this._callbacks = this._callbacks || {};
-    var args = [].slice.call(arguments, 1)
-        , callbacks = this._callbacks[event];
+    var args = [].slice.call(arguments, 1),
+        callbacks = this._callbacks[event];
 
     if (callbacks) {
         callbacks = callbacks.slice(0);
         for (var i = 0, len = callbacks.length; i < len; ++i) {
-            // callbacks[i].apply(this, args);
-            callbacks[i](args);
+            callbacks[i].apply(this, args);
+            // callbacks[i](args);
 
         }
     }
