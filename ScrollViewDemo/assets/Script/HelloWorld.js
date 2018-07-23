@@ -11,15 +11,9 @@ cc.Class({
 
     // use this for initialization
     onLoad: function () {
-        // this.label.string = this.text;
         this.horizontal.node.active = true;
         this.vertical.node.active = false;
         this.grid.node.active = false;
-        this.node.removeAllChildren();
-        cc.instantiate();
-        parseInt();
-        let node= new cc.Node();
-        node.setPositionX();
     },
 
     onBtnClicked(event, customData) {
