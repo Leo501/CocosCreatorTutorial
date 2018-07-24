@@ -1,0 +1,1 @@
+pbjs -t static-module -w commonjs -o 要生成的文件名.js proto文件名.proto

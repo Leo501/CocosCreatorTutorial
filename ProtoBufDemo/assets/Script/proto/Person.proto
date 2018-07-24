@@ -1,0 +1,14 @@
+package Person;
+
+syntax = "proto3";
+
+message personInfo{
+    int32 uid =1;
+    string name=2;
+    bool grender =3;
+    Skill skills=4;
+    message Skill {
+        string favorite =1 [default =eat];
+        repeated string hobby=2 ;
+    }
+}
