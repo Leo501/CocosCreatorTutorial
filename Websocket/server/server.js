@@ -8,6 +8,4 @@ wss.on('connection', function (ws) {
     });
 });
 
-console.log('consol1');
 console.log("websocket连接完毕")
-console.log('a');
