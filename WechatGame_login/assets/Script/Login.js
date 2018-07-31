@@ -14,15 +14,16 @@ cc.Class({
     },
 
     start() {
-        this.wechatLogin();
+        // this.wechatLogin();
     },
 
     wechatLogin() {
         console.log('login');
         wx.login({
-            success: function () {
+            success: (event)=> {
+                console.log('login event=', event);
                 wx.getUserInfo({
-                    success: function (res) {
+                    success:  (res)=> {
                         myGlobal.userInfo = res.userInfo;
                         var userInfo = res.userInfo;
                         var nickName = userInfo.nickName;
@@ -32,6 +33,7 @@ cc.Class({
                         var city = userInfo.city;
                         var country = userInfo.country;
                         console.log(nickName, avatarUrl, gender, province, city, country);
+                        this.onBtn_1(null);
                     }
                 });
             },

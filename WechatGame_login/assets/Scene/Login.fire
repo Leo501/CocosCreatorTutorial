@@ -336,7 +336,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 146.81,
+      "width": 147,
       "height": 60
     },
     "_rotationX": 0,
@@ -390,7 +390,7 @@
       }
     ],
     "_tag": -1,
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 13
@@ -426,7 +426,7 @@
     "_scaleY": 1.2,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": -200,
+      "x": 0,
       "y": -449
     },
     "_skewX": 0,
@@ -626,7 +626,7 @@
       }
     ],
     "_tag": -1,
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 19
@@ -662,7 +662,7 @@
     "_scaleY": 1.2,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 0,
+      "x": 100,
       "y": -449
     },
     "_skewX": 0,
@@ -866,17 +866,18 @@
     "_fitHeight": false
   },
   {
-    "__type__": "280c3rsZJJKnZ9RqbALVwtK",
+    "__type__": "4896an2Du9KerKmdF65r/u1",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 2
     },
     "_enabled": true,
-    "_a": 1,
-    "label": {
-      "__id__": 9
+    "headSprite": {
+      "__id__": 7
     },
-    "text": "Hello, World!"
+    "tipLabel": {
+      "__id__": 9
+    }
   }
 ]

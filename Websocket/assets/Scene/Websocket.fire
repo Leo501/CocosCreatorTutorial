@@ -72,10 +72,10 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 15
+        "__id__": 16
       },
       {
-        "__id__": 16
+        "__id__": 17
       }
     ],
     "_prefab": null,
@@ -376,7 +376,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "close",
+    "_name": "btn_close",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -558,7 +558,11 @@
     },
     "duration": 0.1,
     "zoomScale": 1.2,
-    "clickEvents": [],
+    "clickEvents": [
+      {
+        "__id__": 15
+      }
+    ],
     "_N$interactable": true,
     "_N$enableAutoGrayEffect": false,
     "_N$normalColor": {
@@ -596,6 +600,15 @@
     "_N$target": {
       "__id__": 10
     }
+  },
+  {
+    "__type__": "cc.ClickEvent",
+    "target": {
+      "__id__": 2
+    },
+    "component": "HelloWorld",
+    "handler": "",
+    "customEventData": ""
   },
   {
     "__type__": "cc.Canvas",
