@@ -1344,6 +1344,7 @@ cc.Pomelo = function () {
       pomelo.emit('close', event);
       pomelo.emit('disconnect', event);
       console.log('socket close: ', event);
+      // params.onclose && params.onclose();
       if (!!params.reconnect && reconnectAttempts < maxReconnectAttempts) {
         reconnect = true;
         reconnectAttempts++;
