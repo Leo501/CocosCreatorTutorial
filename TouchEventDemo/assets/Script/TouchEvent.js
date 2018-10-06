@@ -30,11 +30,10 @@ cc.Class({
      * @param {*} event 
      */
     onEventStart(event) {
-        console.log('event', event);
         //世界坐标
         let worldPoint = event.getLocation();
         let lcoalPoint = PointConvertUtil.worldConvertLocalPointAR(this.node, worldPoint);
-        console.log('worldPoint=', worldPoint, 'lcoalPoint=', lcoalPoint);
+        console.log('start Event \n worldPoint=', worldPoint, 'lcoalPoint=', lcoalPoint);
 
     },
 
@@ -45,7 +44,10 @@ cc.Class({
     onEventMove(event) {
         //世界坐标
         let worldPoint = event.getLocation();
+        let lcoalPoint = PointConvertUtil.worldConvertLocalPointAR(this.node, worldPoint);
+        console.log('move Move \n worldPoint=', worldPoint, 'lcoalPoint=', lcoalPoint);
     },
+
     /**
      * 触摸
      * 当手指在目标节点区域外离开屏幕时
@@ -57,18 +59,18 @@ cc.Class({
         //世界坐标
         let worldPoint = event.getLocation();
         let lcoalPoint = PointConvertUtil.worldConvertLocalPointAR(this.node, worldPoint);
-        console.log('worldPoint=', worldPoint, 'lcoalPoint=', lcoalPoint);
+        console.log('cancel Event \n worldPoint=', worldPoint, 'lcoalPoint=', lcoalPoint);
     },
 
     /**
      * 当手指在目标节点区域内离开屏幕时
-     * @param {*} evnet 
+     * @param {*} event 
      */
-    onEventEnd(evnet) {
+    onEventEnd(event) {
         //世界坐标
         let worldPoint = event.getLocation();
         let lcoalPoint = PointConvertUtil.worldConvertLocalPointAR(this.node, worldPoint);
-        console.log('worldPoint=', worldPoint, 'lcoalPoint=', lcoalPoint);
+        console.log('end Event \n worldPoint=', worldPoint, 'lcoalPoint=', lcoalPoint);
     },
 
     update(dt) {
