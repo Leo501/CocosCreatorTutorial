@@ -3,10 +3,10 @@ cc.Class({
 
     properties: {
         nodeBoxBg: cc.Node,
-        total: 6,//几项
-        section: 0,//一项分多少
-        resultIdx: 0,
-        delayTime: 0,
+        total: 6,//几项奖品
+        section: 0,//一项奖品切多少份
+        resultIdx: 0,//显示的结果id
+        delayTime: 0,//延期多少才开始显示结果
     },
 
     initProperties() {
@@ -49,7 +49,25 @@ cc.Class({
         this.node.runAction(cc.sequence(cc.delayTime(1 + this.delayTime), cc.callFunc(() => {
             console.log('已经选择了');
             this.choiceIdx = (this.total - this.resultIdx) * this.section;
+            this.choiceIdx = this.randomChoiceIdx(this.choiceIdx);
         })));
+    },
+
+    onFinish() {
+        console.log('结束了');
+    },
+
+    randomChoiceIdx(idx) {
+        console.log('randomChoiceIdx');
+        let randomIdx = Math.floor(Math.random() * (this.section - 1));
+        if (randomIdx == 0) {//不能是上边
+            randomIdx++;
+        } else if (randomIdx == this.section) {////不能是下边
+            randomIdx--;
+        }
+        let temp = Math.floor(this.section / 2);
+        randomIdx = temp - randomIdx;
+        return idx + randomIdx;
     },
 
     /**
@@ -73,7 +91,9 @@ cc.Class({
                 this.showResult = true;
             }
             console.log('rotation=', rotation, this.rotationSpeed, idx);
-
+            if (this.rotationSpeed <= 0) {
+                this.onFinish();
+            }
         }
     },
 
