@@ -3,10 +3,11 @@ cc.Class({
 
     properties: {
         nodeBoxBg: cc.Node,
-        total: 6,//几项奖品
-        section: 0,//一项奖品切多少份
-        resultIdx: 0,//显示的结果id
-        delayTime: 0,//延期多少才开始显示结果
+        total: 6, //几项奖品
+        section: 0, //一项奖品切多少份
+        // resultIdx: 0, //显示的结果id
+        delayTime: 0, //延期多少才开始显示结果
+        isRandom: false,
     },
 
     initProperties() {
@@ -32,37 +33,43 @@ cc.Class({
         }
     },
 
-    onLoad() {
-        this.initProperties();
-        this.initSection();
-    },
-
     start() {
-        this.init();
+        this.init({
+            resultIdx: 2,
+            delayTime: 3,
+        });
     },
 
     /**
      * @param {*} data 
      */
     init(data) {
+        this.initProperties();
+        this.resultIdx = (data.resultIdx - 1 + this.total) % this.total;
+        this.delayTime = data.delayTime;
+        this.onEnd = data.onFinish;
+        let totalIdx = this.total - 1;
         this.onAccelerate();
         this.node.runAction(cc.sequence(cc.delayTime(1 + this.delayTime), cc.callFunc(() => {
             console.log('已经选择了');
-            this.choiceIdx = (this.total - this.resultIdx) * this.section;
-            this.choiceIdx = this.randomChoiceIdx(this.choiceIdx);
+            this.choiceIdx = (totalIdx - this.resultIdx) * this.section;
+            if (this.isRandom) {
+                this.choiceIdx = this.randomChoiceIdx(this.choiceIdx);
+            }
         })));
     },
 
     onFinish() {
         console.log('结束了');
+        this.onEnd && this.onEnd();
     },
 
     randomChoiceIdx(idx) {
         console.log('randomChoiceIdx');
         let randomIdx = Math.floor(Math.random() * (this.section - 1));
-        if (randomIdx == 0) {//不能是上边
+        if (randomIdx == 0) { //不能是上边
             randomIdx++;
-        } else if (randomIdx == this.section) {////不能是下边
+        } else if (randomIdx == this.section) { ////不能是下边
             randomIdx--;
         }
         let temp = Math.floor(this.section / 2);
@@ -90,7 +97,6 @@ cc.Class({
                 console.log(rotation, this.rotationSpeed);
                 this.showResult = true;
             }
-            console.log('rotation=', rotation, this.rotationSpeed, idx);
             if (this.rotationSpeed <= 0) {
                 this.onFinish();
             }
@@ -151,6 +157,8 @@ cc.Class({
      * @param {*} dt 
      */
     update(dt) {
+        // console.log('dt=', dt);
+        dt = 0.016;
         if (this.rotationSpeed >= 0) {
             this.nodeBoxBg.rotation += this.rotationSpeed * dt;
         }
@@ -160,6 +168,5 @@ cc.Class({
     /**
      * 统一回收组件
      */
-    onDestroy() {
-    }
+    onDestroy() { }
 });
