@@ -1,6 +1,5 @@
-import ListView, {AbsAdapter} from "./ListView";
-
-const ListAdapter = require('./ListAdapter');
+const ListView = require('ListView');
+const ListAdapter = require('ListAdapter');
 
 cc.Class({
     extends: cc.Component,
