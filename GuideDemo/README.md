@@ -1,2 +1,2 @@
-# hello-world
-Hello world new project template.
+# Guide demo
+一个简单的选择性点击，可用于新手引导。
