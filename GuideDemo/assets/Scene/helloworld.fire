@@ -1110,14 +1110,12 @@
       "__id__": 22
     },
     "_enabled": true,
+    "type": 2,
     "nodeTarget": {
       "__id__": 10
     },
-    "nodeMark": {
+    "nodeMask": {
       "__id__": 23
-    },
-    "nodeMarkBg": {
-      "__id__": 24
     }
   },
   {

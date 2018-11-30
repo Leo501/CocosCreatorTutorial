@@ -1,2 +1,2 @@
-# Guide demo
-一个简单的选择性点击，可用于新手引导。
+# Guide Demo
+一个关于简单新手引导的demo
