@@ -29,6 +29,11 @@ cc.Class({
     this.setMode(this.type);
     this.setBoxBounding();
     this.node.on('touchstart', this.onTouchStart, this);
+    if (!this.nodeTarget) {
+      this.node.removeFromParent();
+      console.error('MarkTouch nodeTarget is null');
+      return;
+    }
     this.initMarKPos(this.nodeTarget.convertToWorldSpaceAR(cc.v2(0, 0)));
   },
 
@@ -74,7 +79,7 @@ cc.Class({
    * 回调
    */
   onTouchEventFinish() {
-    this.node.active = false;
+    this.node.removeFromParent();
   },
 
   /**
@@ -83,9 +88,11 @@ cc.Class({
    */
   getMaxLen(node) {
     let size = node.width;
-    if (size < node.height) {
-      size = node.height;
-    }
+    // if (size < node.height) {
+    //   size = node.height;
+    // }
+    size += node.height;
+    size /= 2;
     return size;
   },
 
@@ -104,7 +111,7 @@ cc.Class({
    */
   onTouchStart(event) {
     let touchPos = event.getLocation();
-    // console.log('touchPos=', touchPos);
+    console.log('touchPos=', touchPos);
     let retWorld = this.nodeTarget.getBoundingBoxToWorld();
     if (retWorld.contains(touchPos)) {
       //触摸事件可向下传递
@@ -114,6 +121,10 @@ cc.Class({
       this.node._touchListener.setSwallowTouches(true);
     }
   },
+
+  // setAnim(){
+  //   thi 
+  // },
 
   offEvent() {
 
