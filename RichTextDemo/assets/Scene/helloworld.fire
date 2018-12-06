@@ -590,7 +590,8 @@
     "_enabled": true,
     "richTextInfo": {
       "__id__": 14
-    }
+    },
+    "speed": 150
   },
   {
     "__type__": "cc.Canvas",
