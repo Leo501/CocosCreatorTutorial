@@ -3,7 +3,8 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        richTextInfo: cc.RichText
+        richTextInfo: cc.RichText,
+        speed: 200
     },
 
     ctor() {
@@ -26,7 +27,9 @@ cc.Class({
      * @param {*} data 
      */
     init(data) {
-        this.startPosX = 640;
+        let visiSize = cc.director.getVisibleSize();
+        let halfWidth = visiSize.width / 2;
+        this.startPosX = halfWidth;
         this.richTextInfo.node.x = this.startPosX;
         this.richTextInfo.string = this.initTemplate(data.name, data.coin);
     },
@@ -50,6 +53,13 @@ cc.Class({
     },
 
     /**
+     * 
+     */
+    onFinish() {
+        console.log('onFinish');
+    },
+
+    /**
      * 每一帧回调
      * @param {*} dt 
      */
@@ -57,9 +67,10 @@ cc.Class({
         let length = this.richTextInfo.node.width;
         let moveX = this.easeExponentialIn(this.richTextInfo.node.x, length + this.totalWidth);
         console.log('moveX=', moveX);
-        this.richTextInfo.node.x -= dt * 200 + moveX;
+        this.richTextInfo.node.x -= dt * this.speed + moveX;
         if (this.richTextInfo.node.x < -(length + this.startPosX)) {
             this.richTextInfo.node.x = this.startPosX;
+            this.onFinish();
         }
     },
 

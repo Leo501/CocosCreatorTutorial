@@ -81,7 +81,6 @@ cc.Class({
   },
 
   clearState() {
-    this.content.removeAllChildren();
     this.scrollTopNotifyed = false;
     this.scrollBottomNotifyed = false;
   },
@@ -104,11 +103,16 @@ cc.Class({
     if (updateIndex && updateIndex.length > 0) {
       updateIndex.forEach(i => {
         if (this._filledIds.hasOwnProperty(i)) {
+          let node = this.getChildNodeByIdx(i);
+          node && this._items.put(node);
           delete this._filledIds[i];
         }
       });
     } else {
       Object.keys(this._filledIds).forEach(key => {
+        let idx = this._filledIds[key];
+        let node = this.getChildNodeByIdx(idx);
+        node && this._items.put(node);
         delete this._filledIds[key];
       });
     }
@@ -118,7 +122,6 @@ cc.Class({
     } else {
       this.content.height = this.adapter.getCount() * (this._itemHeight + this.spacing) + this.spacing; // get total content height
     }
-    // this.content.removeAllChildren();
 
     this.scrollView.scrollToTop();
   },
@@ -172,6 +175,22 @@ cc.Class({
     child['_tag'] = posIndex;
     this._filledIds[posIndex] = posIndex;
     child.setPosition(-child.width * (0.5 + posIndex) - this.spacing * (posIndex + 1), 0);
+  },
+
+  /**
+   * 通过idx 
+   * 取得 content中的 node
+   * @param {*} idx 
+   */
+  getChildNodeByIdx(idx) {
+    let children = this.content.children || [];
+    for (let i = 0; i < children.length; i++) {
+      let item = children[i];
+      if (item['_tag'] == idx) {
+        return item;
+      }
+    }
+    return null;
   },
 
   // 获取可回收item
@@ -237,6 +256,7 @@ cc.Class({
       scroll = 0;
     }
     let itemStartIndex = Math.floor(scroll / ((this.horizontal ? this._itemWidth : this._itemHeight) + this.spacing));
+    // console.log('checkNeedUpdate scroll=', scroll, itemStartIndex);
     if (itemStartIndex < 0 && !this.scrollTopNotifyed) {
       this.notifyScrollToTop();
       this.scrollTopNotifyed = true;
