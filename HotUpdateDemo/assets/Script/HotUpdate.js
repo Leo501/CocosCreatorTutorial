@@ -7,7 +7,8 @@ cc.Class({
 
     properties: {
         manifestUrl: cc.RawAsset,
-        _hotUpdateName: 'game-remote-asset'
+        _hotUpdateName: 'game-remote-asset',
+        _nowVersion: ''
     },
 
     /**
@@ -18,15 +19,19 @@ cc.Class({
         this.nextFn = nextFn;
         this.progressFn = progressFn;
         this.failedFn = failedFn;
-        if ((cc.sys.os != cc.sys.OS_ANDROID) || (cc.sys.os != cc.sys.OS_IOS)) {
+        // this.loadManifest();
+        // console.log('os=', cc.sys.os);
+        if (cc.sys.isBrowser) {
             console.log('is not OS_ANDROID or OS_IOS');
-            nextFn();
+            this.nextFn && nextFn(this._nowVersion);
             return;
         }
+        let self = this;
         this._storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + this._hotUpdateName);
         cc.log('Storage path for remote asset : ' + this._storagePath);
         this.versionCompareHandle = function (versionA, versionB) {
             console.log('versionLocal=' + versionA + ' versionRemote=' + versionB);
+            self._nowVersion = versionA;
             var vA = versionA.split('.');
             var vB = versionB.split('.');
             for (var i = 0; i < vA.length; ++i) {
@@ -66,9 +71,27 @@ cc.Class({
         this.checkUpdate();
     },
 
+    /**
+     * 用于当检查热更新回调过慢时
+     */
+    clearAllCallFunc() {
+        console.log('清除回调');
+        this.nextFn = null;
+        this.progressFn = null;
+        this.failedFn = null;
+    },
+
+    loadManifest() {
+        // console.log('this.manifestUrl=', this.manifestUrl);
+        // 手动设置路径
+        this.manifestUrl = 'res/raw-assets/project.manifest';
+    },
+
     //热更新完成 or 不需要热更新 进入游戏
     onEnterGame: function () {
-        this.nextFn();
+        console.log('热更新完成，', this._nowVersion);
+        this.nextFn && this.nextFn(this._nowVersion);
+
     },
 
     /**
@@ -234,4 +257,8 @@ cc.Class({
     },
 
     // update (dt) {},
+
+    onDestroy() {
+        this.clearAllCallFunc();
+    }
 });
