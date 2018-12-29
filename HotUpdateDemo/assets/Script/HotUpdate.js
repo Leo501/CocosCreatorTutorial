@@ -72,6 +72,16 @@ cc.Class({
     },
 
     /**
+     * 错误处理和失败重试
+     */
+    downloadFailedAssets() {
+        console.log('downloadFailedAssets');
+        this._updateListener = new jsb.EventListenerAssetsManager(this._am, this.updateCb.bind(this));
+        cc.eventManager.addListener(this._updateListener, 1);
+        this._am.downloadFailedAssets();
+    },
+
+    /**
      * 用于当检查热更新回调过慢时
      */
     clearAllCallFunc() {
@@ -98,6 +108,8 @@ cc.Class({
      * 下载文件进度
      */
     onDownloadProgess(byteProgress, fileProgress) {
+        byteProgress = Math.round(byteProgress * 100) / 100 || 0;
+        fileProgress = Math.round(fileProgress * 100) / 100 || 0;
         if (this.progressFn) this.progressFn(fileProgress, byteProgress);
     },
 
@@ -107,7 +119,7 @@ cc.Class({
      * @param {*} err 
      */
     onFailure(type) {
-        console.log('type=', type, 'err=', err);
+        console.log('type=', type);
         if (this.failedFn) this.failedFn(type);
     },
 
@@ -215,6 +227,7 @@ cc.Class({
                 failed = true;
                 break;
             case jsb.EventAssetsManager.UPDATE_FINISHED:
+                console.log('UPDATE_FINISHED');
                 // this.panel.info.string = 'Update finished. ' + event.getMessage();
                 needRestart = true;
                 break;
@@ -236,10 +249,10 @@ cc.Class({
         //下载失败
         if (failed) {
             console.log('Hotupdate failure');
+            this.onFailure(ErrCode.updateFailed);
             cc.eventManager.removeListener(this._updateListener);
             this._updateListener = null;
             this._updating = false;
-            this.onFailure(ErrCode.updateFailed);
         }
 
         if (needRestart) {
