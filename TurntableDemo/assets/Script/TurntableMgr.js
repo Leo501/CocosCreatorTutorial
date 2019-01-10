@@ -11,10 +11,14 @@ cc.Class({
     },
 
     initProperties() {
+        this.range = 360;
+        this.maxRangeSpeed = this.range * 2;
         this.rotationSpeed = 0;
         this.choiceIdx = -1;
         this.isFinish = false;
         this.showResult = false;
+        //减速时，每次转动的角度
+        this.pathDelRota = 0;
         this.initSection();
     },
 
@@ -22,22 +26,19 @@ cc.Class({
      * 分盘
      */
     initSection() {
-        console.log('initSection');
         this.rotaionList = [];
         let totalPath = this.section * this.total;
-        let path = 360 / totalPath;
+        let path = this.range / totalPath;
         this.path = path;
-        this.pathDelRota = 360 / (totalPath);
+        //减速时，每次转动的角度
+        this.pathDelRota = (this.range / (totalPath) * 2);
         for (let i = 0; i < this.section; i++) {
             this.rotaionList.push(path * i);
         }
     },
 
-    start() {
-        this.init({
-            resultIdx: 2,
-            delayTime: 3,
-        });
+    onLoad() {
+
     },
 
     /**
@@ -46,12 +47,12 @@ cc.Class({
     init(data) {
         this.initProperties();
         this.resultIdx = (data.resultIdx - 1 + this.total) % this.total;
-        this.delayTime = data.delayTime;
+        this.delayTime = data.delayTime || 2;
         this.onEnd = data.onFinish;
         let totalIdx = this.total - 1;
         this.onAccelerate();
         this.node.runAction(cc.sequence(cc.delayTime(1 + this.delayTime), cc.callFunc(() => {
-            console.log('已经选择了');
+            console.log('已经选择');
             this.choiceIdx = (totalIdx - this.resultIdx) * this.section;
             if (this.isRandom) {
                 this.choiceIdx = this.randomChoiceIdx(this.choiceIdx);
@@ -59,11 +60,18 @@ cc.Class({
         })));
     },
 
+    /**
+     * 结束回调
+     */
     onFinish() {
-        console.log('结束了');
+        console.log('结束');
         this.onEnd && this.onEnd();
     },
 
+    /**
+     * 某项的区域下，随机一个下标
+     * @param {*} idx 
+     */
     randomChoiceIdx(idx) {
         console.log('randomChoiceIdx');
         let randomIdx = Math.floor(Math.random() * (this.section - 1));
@@ -78,11 +86,11 @@ cc.Class({
     },
 
     /**
-     * 
+     * 转动检测
      * @param {*} rotation 
      */
     wacthRotaion(rotation) {
-        rotation %= 360;
+        rotation %= this.range;
         rotation |= 0;
         let idx = rotation / this.path;
         idx |= 0;
@@ -90,46 +98,18 @@ cc.Class({
         if (this.nowIdx != idx) {
             this.nowIdx = idx;
             if (this.showResult) {
+                console.log('showResult=', this.nowIdx, this.choiceIdx);
                 this.onDecelerate(this.pathDelRota);
+                //结束回调
+                if (this.choiceIdx == this.nowIdx) {
+                    this.onFinish();
+                }
             }
             if (!this.showResult && this.choiceIdx == this.nowIdx) {
                 console.log('开始减速');
-                console.log(rotation, this.rotationSpeed);
                 this.showResult = true;
             }
-            if (this.rotationSpeed <= 0) {
-                this.onFinish();
-            }
-        }
-    },
 
-    /**
-     * 
-     * @param {*} rotation 
-     */
-    wacthRotaion_type1(rotation) {
-        rotation %= 360;
-        rotation |= 0;
-        let idx = rotation / this.path;
-        idx |= 0;
-
-        if (this.nowIdx != idx) {
-            this.nowIdx = idx;
-            // console.log('nowIdx=', idx);
-            if (this.choiceIdx == this.nowIdx) {
-                console.log('开始减速');
-                this.onDecelerate(30);
-            }
-            if (this.rotationSpeed == 5) {
-                this.rotationSpeed = 0;
-            }
-            if (this.isFinish) {
-                this.onDecelerate(15);
-                // if(this)
-            }
-            if (this.rotationSpeed == 120) {
-                this.isFinish = true;
-            }
         }
     },
 
@@ -144,11 +124,13 @@ cc.Class({
      * 加速
      */
     onAccelerate() {
+        let accelPart = 4;
+        let part = this.maxRangeSpeed / accelPart;
         if (this.accelerateAction) this.node.stopAction(this.accelerateAction);
         this.accelerateAction = cc.repeat(cc.sequence(cc.delayTime(0.25), cc.callFunc(() => {
-            this.rotationSpeed += 90;
+            this.rotationSpeed += part;
             console.log('this.rotationSpeed', this.rotationSpeed);
-        })), 4);
+        })), accelPart);
         this.node.runAction(this.accelerateAction);
     },
 
@@ -157,7 +139,6 @@ cc.Class({
      * @param {*} dt 
      */
     update(dt) {
-        // console.log('dt=', dt);
         dt = 0.016;
         if (this.rotationSpeed >= 0) {
             this.nodeBoxBg.rotation += this.rotationSpeed * dt;
@@ -168,5 +149,7 @@ cc.Class({
     /**
      * 统一回收组件
      */
-    onDestroy() { }
+    onDestroy() {
+        this.node.stopAllActions();
+    }
 });
