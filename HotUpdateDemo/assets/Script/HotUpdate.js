@@ -1,7 +1,12 @@
+/**
+ * 参考文章
+ * https://www.cnblogs.com/pixs-union/p/9435882.html
+ */
 const ErrCode = cc.Enum({
     laodManifestFailed: 0, //下载manifest失败
     updateFailed: 1, //更新失败，
 });
+const MD5 = require("Uint8ArrayMD5");
 cc.Class({
     extends: cc.Component,
 
@@ -56,11 +61,26 @@ cc.Class({
         }
 
         this._am.setVerifyCallback(function (path, asset) {
+            console.log('path', path, 'setVerifyCallback' + JSON.stringify(asset));
             var compressed = asset.compressed;
+            /**
+             * 计算md5
+             * @param {*} filePath 
+             */
+            let calMD5OfFile = function (filePath) {
+                return MD5(jsb.fileUtils.getDataFromFile(filePath));
+            };
+
             if (compressed) {
                 return true;
             } else {
-                return true;
+                var resMD5 = calMD5OfFile(path);
+                console.log('resMD%=', resMD5, 'asset md5=', asset.md5);
+                if (asset.md5 == resMD5) {
+                    return true;
+                }
+                jsb.fileUtils.removeFile(path);
+                return false;
             }
         });
 
@@ -134,7 +154,6 @@ cc.Class({
         if (!this._am.getLocalManifest() || !this._am.getLocalManifest().isLoaded()) {
 
             this.onFailure(ErrCode.laodManifestFailed);
-            // this.panel.info.string = 'Failed to load local manifest ...';
             return;
         }
         this._checkListener = new jsb.EventListenerAssetsManager(this._am, this.checkCb.bind(this));

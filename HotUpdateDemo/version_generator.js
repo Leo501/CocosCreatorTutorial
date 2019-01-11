@@ -31,6 +31,13 @@ while (i < process.argv.length) {
         case '--version':
         case '-v':
             manifest.version = process.argv[i + 1];
+            var versionPath = "./config.json";
+            var data = fs.readFileSync(versionPath);
+            let param = JSON.parse(data.toString());
+            if (param) {
+                manifest.version = param.game_version;
+            };
+            console.log('version=', manifest.version);
             i += 2;
             break;
         case '--src':
@@ -38,7 +45,6 @@ while (i < process.argv.length) {
             src = process.argv[i + 1];
             hotDir = src + 'hotUpdate';
             console.log('hotDir=', hotDir);
-
             i += 2;
             break;
         case '--dest':
@@ -75,7 +81,9 @@ function readDir(dir, obj) {
         } else if (stat.isFile()) {
             // Size in Bytes
             size = stat['size'];
-            md5 = crypto.createHash('md5').update(fs.readFileSync(subpath, 'binary')).digest('hex');
+			console.log('md5 ',subpath);
+            // md5 = crypto.createHash('md5').update(fs.readFileSync(subpath, 'binary')).digest('hex');//返回的并非二进制类型，而是String。这会导致非文本文件md5计算错误
+			md5 = crypto.createHash('md5').update(fs.readFileSync(subpath)).digest('hex');//
             compressed = path.extname(subpath).toLowerCase() === '.zip';
 
             relative = path.relative(src, subpath);
