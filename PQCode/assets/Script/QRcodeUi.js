@@ -9,6 +9,7 @@ cc.Class({
 	},
 
 	init(url){
+		//注意 最好把qrImage与qrcode的节点长宽设置为2的倍数。不然可能会出现无法识别二维码
 		var ctx = this.node.addComponent(cc.Graphics);
 		if (typeof (url) !== 'string') {
 			console.log('url is not string',url);
