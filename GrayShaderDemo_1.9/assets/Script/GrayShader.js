@@ -35,11 +35,34 @@ cc.Class({
 
   },
 
+  //正常shader
+  normalShader(){
+    let program = new cc.GLProgram();
+    if (cc.sys.isNative) {
+      program.initWithString(Gray.default_vert, Gray.normal_frag);
+      program.link();
+      program.updateUniforms();
+    } else {
+      program.initWithVertexShaderByteArray(Gray.default_vert, Gray.normal_frag);
+      program.addAttribute(cc.macro.ATTRIBUTE_NAME_POSITION, cc.macro.VERTEX_ATTRIB_POSITION);
+      program.addAttribute(cc.macro.ATTRIBUTE_NAME_COLOR, cc.macro.VERTEX_ATTRIB_COLOR);
+      program.addAttribute(cc.macro.ATTRIBUTE_NAME_TEX_COORD, cc.macro.VERTEX_ATTRIB_TEX_COORDS);
+      program.link();
+      program.updateUniforms();
+    }
+    if (this.isAllChildrenUse) {
+      this.setProgram(this.node._sgNode, program);
+    } else {
+      this.setProgram(this.node.getComponent(cc.Sprite)._sgNode, program);
+    }
+  },
+
   setProgram(node, program) {
     if (cc.sys.isNative) {
       var glProgram_state = cc.GLProgramState.getOrCreateWithGLProgram(program);
       node.setGLProgramState(glProgram_state);
     } else {
+      node.normalProgram=node.getShaderProgram();
       node.setShaderProgram(program);
     }
 
@@ -52,24 +75,9 @@ cc.Class({
     }
   },
 
-  // 恢复默认shader
-  resetProgram(node) {
-    node.getComponent(cc.Sprite)._sgNode.setState(0);
-    var children = node.children;
-    if (!children)
-      return;
-    for (var i = 0; i < children.length; i++) {
-      this.resetProgram(children[i]);
-    }
-
-  },
-
+  //恢复默认shader
   resetShader() {
-    if (this.isAllChildrenUse) {
-      this.resetProgram(this.node);
-    } else {
-      this.node.getComponent(cc.Sprite)._sgNode.setState(0);
-    }
+    this.normalShader(this.node);
   },
 
   onEventClicked_setEffect() {
