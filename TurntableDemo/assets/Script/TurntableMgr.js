@@ -12,6 +12,7 @@ cc.Class({
 
     initProperties() {
         this.range = 360;
+		this.nodeBoxBg.rotation = 0;
         this.maxRangeSpeed = this.range * 2;
         this.rotationSpeed = 0;
         this.choiceIdx = -1;
