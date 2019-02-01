@@ -3,8 +3,8 @@ cc.Class({
 
   properties: {
     itemTemplate: cc.Prefab,
-    spacing: 1,
-    spawnCount: 2,
+    spacing: 1,//每个itme的间隔
+    spawnCount: 2,//预加载item个数
     scrollView: cc.ScrollView,
   },
 
@@ -22,8 +22,8 @@ cc.Class({
     this.lastStartIndex = -1;
     this.scrollTopNotifyed = false;
     this.scrollBottomNotifyed = false;
-    this.pullDownCallback = () => {};
-    this.pullUpCallback = () => {};
+    this.pullDownCallback = () => { };
+    this.pullUpCallback = () => { };
   },
 
   onLoad() {
@@ -117,14 +117,19 @@ cc.Class({
       });
     }
     this.lastStartIndex = -1;
+    this.resetScrollLength();
+
+    this.scrollView.scrollToTop();
+  },
+
+  resetScrollLength() {
     if (this.horizontal) {
       this.content.width = this.adapter.getCount() * (this._itemWidth + this.spacing) + this.spacing;
     } else {
       this.content.height = this.adapter.getCount() * (this._itemHeight + this.spacing) + this.spacing; // get total content height
     }
-
-    this.scrollView.scrollToTop();
   },
+
   scrollToTop(anim = false) {
     this.scrollView.scrollToTop(anim ? 1 : 0);
   },
@@ -320,5 +325,5 @@ cc.Class({
     return (cc.sys.isMobile || cc.sys.platform === cc.sys.WECHAT_GAME || cc.sys.platform === cc.sys.QQ_PLAY);
   },
 
-  onDestroy() {}
+  onDestroy() { }
 });
