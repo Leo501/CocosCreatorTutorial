@@ -1,0 +1,10 @@
+{
+  "name": "MobXDemo1",
+  "version": "1.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "eslint": "^5.12.1",
+    "mobx": "^5.1.0"
+  }
+}
