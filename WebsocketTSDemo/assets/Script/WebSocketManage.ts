@@ -121,6 +121,7 @@ export class WebsocketMgr {
         //发送心跳
         let dateObj = new Date();
         this.lastTickCBTime = dateObj.getTime();
+        //发送open事件。如发起 login 事件 or create account
         //KBEngine.Event.fire('onConnectionState', true);
     }
 
