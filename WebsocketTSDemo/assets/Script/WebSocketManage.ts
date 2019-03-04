@@ -64,7 +64,8 @@ export class WebsocketMgr {
         this.state = SocketState.none;
     }
 
-    public connect(addr: string) {
+    public connect() {
+        let addr = this.addr;
         try {
             this.socket = new WebSocket(addr);
         } catch (error) {
@@ -152,7 +153,7 @@ export class WebsocketMgr {
         this.state = SocketState.reconnece;
         this.reconnectInterval = setInterval(() => {
             if (this.state == SocketState.reconnece) {
-                this.connect(this.addr);
+                this.connect();
             } else {
                 this.clearReconnectEvent();
             }
@@ -183,6 +184,4 @@ export class WebsocketMgr {
             //发送ping 指令 保持心跳
         }
     }
-
-
 }
