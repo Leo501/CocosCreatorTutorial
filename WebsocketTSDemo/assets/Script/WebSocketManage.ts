@@ -5,7 +5,7 @@ export class WebArgs {
     //单位毫秒
     public serverHeartbeatTick: number = 5000;
     //重连间隔 为0表示不重连  单位毫秒
-    public reconnectInterval = 1000;
+    public reconnectInterval = 0;
     //刷新间隔 单位毫秒
     public updateHZ = 100;
 }
@@ -52,10 +52,11 @@ export class WebsocketMgr {
         let dateObj = new Date();
         this.lastTickTime = dateObj.getTime();
         this.addr = 'ws://' + this.agrs.ip + ':' + this.agrs.port;
-        this.idInterval = setInterval(this.update.call(this), this.agrs.updateHZ);
+        this.idInterval = setInterval(this.update.bind(this), this.agrs.updateHZ);
     }
 
     private reset() {
+        console.log('reset');
         this.resetSocket();
         this.agrs = null;
         this.idInterval = null;
@@ -65,6 +66,7 @@ export class WebsocketMgr {
     }
 
     public connect() {
+        console.log('connect');
         let addr = this.addr;
         try {
             this.socket = new WebSocket(addr);
@@ -78,22 +80,26 @@ export class WebsocketMgr {
         this.socket.onerror = this.onerror_before_onopen.bind(this);
         this.socket.onmessage = this.onmessage.bind(this);
         this.socket.onclose = this.onclose.bind(this);
+
     }
 
     public close() {
+        console.log('close');
         this.resetSocket();
     }
 
     public disconnect() {
+        console.log('disconnect');
         this.resetSocket();
     }
 
     public send(msg) {
-        console.log('send msg');
+        console.log('send ', msg);
         this.socket.send(msg);
     }
 
     private resetSocket() {
+        console.log('resetSocket');
         try {
             if (this.socket) {
                 this.socket.onopen = undefined;
@@ -109,8 +115,12 @@ export class WebsocketMgr {
     }
 
     private onopen(msg) {
+        console.log('onopen', msg);
         this.socket.onerror = this.onerror_after_onopen;
         this.state = SocketState.open;
+        //发送心跳
+        let dateObj = new Date();
+        this.lastTickCBTime = dateObj.getTime();
         //KBEngine.Event.fire('onConnectionState', true);
     }
 
@@ -130,23 +140,29 @@ export class WebsocketMgr {
     }
 
     private onmessage(msg) {
-        console.log('onmessage', msg);
+        console.log('onmessage', msg.data);
         this.state = SocketState.active;
+        this.onAppActiveTickCB(msg.data);
     }
 
     private onclose() {
-        console.log();
+        console.log('onclose');
         this.resetSocket();
         // this.state = SocketState.close;
-        //KBEngine.Event.fire('onDisconnected');
+        //KBEngine.Event.fire('onClose');
     }
 
-    private onAppActiveTickCB() {
+    private onAppActiveTickCB(data: string) {
+        if (data != "ping") {
+            return;
+        }
+        console.log();
         let dateObj = new Date();
         this.lastTickCBTime = dateObj.getTime();
     }
 
     private reconnect() {
+        console.log('reconnect');
         if (this.agrs.reconnectInterval < 1) {
             return;
         }
@@ -161,6 +177,7 @@ export class WebsocketMgr {
     }
 
     private clearReconnectEvent() {
+        console.log('clearReconnectEvent');
         if (this.reconnectInterval) {
             clearInterval(this.reconnectInterval);
         }
@@ -173,15 +190,18 @@ export class WebsocketMgr {
 
         let dateObj = new Date();
         if ((dateObj.getTime() - this.lastTickTime) > this.agrs.serverHeartbeatTick) {
+            console.log('lastTickTime', this.lastTickTime);
             // 此时应该通知客户端掉线了
             if (this.lastTickCBTime < this.lastTickTime) {
                 //会调用onClose事件
                 this.socket.close();
                 this.reconnect();
                 //KBEngine.Event.fire('onDisconnected');
+                return
             }
             this.lastTickTime = dateObj.getTime();
             //发送ping 指令 保持心跳
+            this.send("ping");
         }
     }
 }

@@ -18,7 +18,7 @@ export default class Helloworld extends cc.Component {
 
     onEventClickedConnect() {
         let webArgs = new WebArgs();
-        webArgs.ip = "127.0.0.1";
+        webArgs.ip = "192.168.0.116";
         webArgs.port = 8181;
         WSMgr.Instance().connect(webArgs);
     }
