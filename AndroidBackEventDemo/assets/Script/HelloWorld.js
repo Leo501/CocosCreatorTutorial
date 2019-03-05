@@ -22,6 +22,7 @@ cc.Class({
 
     onKeyDown(event) {
         switch (event.keyCode) {
+			//注意Creator版本为2.x的请把cc.KEY.back。修改成cc.macro.KEY.back
             case cc.KEY.back:
                 if (this.isBackGame) {
                     cc.director.end();
