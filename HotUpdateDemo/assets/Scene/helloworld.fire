@@ -404,7 +404,7 @@
     "text": "Hello, World"
   },
   {
-    "__type__": "ca6fbSYPa9P2JPPqQFdB0OQ",
+    "__type__": "997e3R7o2NKiaTO+698vLEd",
     "_name": "",
     "_objFlags": 0,
     "node": {
@@ -414,6 +414,7 @@
     "manifestUrl": {
       "__uuid__": "2857653b-09b5-4724-a067-615f6905fbc2"
     },
-    "_hotUpdateName": "game-remote-asset"
+    "_hotUpdateName": "game-remote-asset",
+    "_nowVersion": ""
   }
 ]

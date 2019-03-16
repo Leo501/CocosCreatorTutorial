@@ -1,17 +1,42 @@
 (function () {
 
-	if (window.cc && cc.sys.isNative) { 
-        var hotUpdateSearchPaths = cc.sys.localStorage.getItem('HotUpdateSearchPaths'); 
-        if (hotUpdateSearchPaths) { 
-            jsb.fileUtils.setSearchPaths(JSON.parse(hotUpdateSearchPaths)); 
+    var version = "1.0.0";
+    let curVersion = cc.sys.localStorage.getItem("gameVersion") || "1.0.0";
+    var hotUpdateSearchPaths = cc.sys.localStorage.getItem('HotUpdateSearchPaths');
+
+    function versionCompareHandle(versionA, versionB) {
+        var vA = versionA.split('.');
+        var vB = versionB.split('.');
+        for (var i = 0; i < vA.length; ++i) {
+            var a = parseInt(vA[i]);
+            var b = parseInt(vB[i] || 0);
+            if (a === b) {
+                continue;
+            } else {
+                return a - b;
+            }
+        }
+        if (vB.length > vA.length) {
+            return -1;
+        } else {
+            return 0;
         }
     }
-    function boot () {
+    //版本比最近版本等于or大于。需要清理热更新cache;
+    if (versionCompareHandle(version, curVersion) >= 0) {
+        hotUpdateSearchPaths && jsb.fileUtils.removeDirectory(hotUpdateSearchPaths);
+    }
+    //设置搜索路径
+    if (window.cc && cc.sys.isNative) {
+        hotUpdateSearchPaths && jsb.fileUtils.setSearchPaths(JSON.parse(hotUpdateSearchPaths));
+    }
+
+    function boot() {
 
         var settings = window._CCSettings;
         window._CCSettings = undefined;
 
-        if ( !settings.debug ) {
+        if (!settings.debug) {
             var uuids = settings.uuids;
 
             var rawAssets = settings.rawAssets;
@@ -68,7 +93,7 @@
             initAdapter();
         }
 
-        function setLoadingDisplay () {
+        function setLoadingDisplay() {
             // Loading splash scene
             var splash = document.getElementById('splash');
             var progressBar = splash.querySelector('.progress-bar span');
@@ -101,8 +126,7 @@
                 if (cc.sys.isMobile) {
                     if (settings.orientation === 'landscape') {
                         cc.view.setOrientation(cc.macro.ORIENTATION_LANDSCAPE);
-                    }
-                    else if (settings.orientation === 'portrait') {
+                    } else if (settings.orientation === 'portrait') {
                         cc.view.setOrientation(cc.macro.ORIENTATION_PORTRAIT);
                     }
                     cc.view.enableAutoFullScreen([
@@ -158,24 +182,21 @@
 
         if (false) {
             BK.Script.loadlib();
-        }
-        else
-        {
+        } else {
             var bundledScript = settings.debug ? 'src/project.dev.js' : 'src/project.js';
             if (jsList) {
                 jsList = jsList.map(function (x) {
                     return 'src/' + x;
                 });
                 jsList.push(bundledScript);
-            }
-            else {
+            } else {
                 jsList = [bundledScript];
             }
         }
 
         // anysdk scripts
         if (cc.sys.isNative && cc.sys.isMobile) {
-//            jsList = jsList.concat(['src/anysdk/jsb_anysdk.js', 'src/anysdk/jsb_anysdk_constants.js']);
+            //            jsList = jsList.concat(['src/anysdk/jsb_anysdk.js', 'src/anysdk/jsb_anysdk_constants.js']);
         }
 
         var option = {

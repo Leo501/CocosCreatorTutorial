@@ -1,0 +1,30 @@
+{
+  "name": "JiangShiTest",
+  "version": "1.0.0",
+  "description": "The sample of Cocos Creator for build & optimize & deploy,",
+  "main": "loading/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.quickcan.com:gamedev/chalk.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^4.3.0",
+    "gulp": "^3.9.1",
+    "gulp-file-inline": "^1.3.7",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-imagemin": "^3.3.0",
+    "gulp-replace": "^0.6.1",
+    "gulp-rev": "^8.0.0",
+    "gulp-rev-collector": "^1.2.2",
+    "del": "^3.0.0",
+    "gulp-javascript-obfuscator": "^1.1.3"
+  },
+  "dependencies": {
+    "fs-jetpack": "^2.2.2"
+  }
+}

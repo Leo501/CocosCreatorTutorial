@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
+const jetpack = require('fs-jetpack');
 
 var manifest = {
     packageUrl: 'http://localhost/tutorial-hot-update/remote-assets/',
@@ -14,6 +15,7 @@ var manifest = {
 var dest = './remote-assets/';
 var src = './jsb/';
 var hotDir = null;
+var packageRes = null;
 // Parse arguments
 var i = 2;
 while (i < process.argv.length) {
@@ -31,20 +33,16 @@ while (i < process.argv.length) {
         case '--version':
         case '-v':
             manifest.version = process.argv[i + 1];
-            var versionPath = "./config.json";
-            var data = fs.readFileSync(versionPath);
-            let param = JSON.parse(data.toString());
-            if (param) {
-                manifest.version = param.game_version;
-            };
             console.log('version=', manifest.version);
             i += 2;
             break;
         case '--src':
         case '-s':
             src = process.argv[i + 1];
-            hotDir = src + 'hotUpdate';
+            hotDir = path.join(src, 'hotUpdate');
             console.log('hotDir=', hotDir);
+            packageRes = path.join(src, 'res');
+            console.log('hpackageRes', packageRes);
             i += 2;
             break;
         case '--dest':
@@ -60,10 +58,12 @@ while (i < process.argv.length) {
 
 /**
  * 读取文件到obj中
+ * 过滤渠道json
  * @param {*} dir 
  * @param {*} obj 
  */
 function readDir(dir, obj) {
+    console.log('readDir = ', dir);
     var stat = fs.statSync(dir);
     if (!stat.isDirectory()) {
         return;
@@ -74,6 +74,10 @@ function readDir(dir, obj) {
         if (subpaths[i][0] === '.') {
             continue;
         }
+        if (subpaths[i] == 'channel.json') {
+            console.log('---------------channel.json-------------------');
+            continue;
+        }
         subpath = path.join(dir, subpaths[i]);
         stat = fs.statSync(subpath);
         if (stat.isDirectory()) {
@@ -81,9 +85,9 @@ function readDir(dir, obj) {
         } else if (stat.isFile()) {
             // Size in Bytes
             size = stat['size'];
-			console.log('md5 ',subpath);
+            console.log('md5 ', subpath);
             // md5 = crypto.createHash('md5').update(fs.readFileSync(subpath, 'binary')).digest('hex');//返回的并非二进制类型，而是String。这会导致非文本文件md5计算错误
-			md5 = crypto.createHash('md5').update(fs.readFileSync(subpath)).digest('hex');//
+            md5 = crypto.createHash('md5').update(fs.readFileSync(subpath)).digest('hex'); //
             compressed = path.extname(subpath).toLowerCase() === '.zip';
 
             relative = path.relative(src, subpath);
@@ -117,78 +121,58 @@ var destManifest = path.join(dest, 'project.manifest');
 var destVersion = path.join(dest, 'version.manifest');
 var hotManifest = path.join(hotDir, 'project.manifest');
 var hotVersion = path.join(hotDir, 'version.manifest');
-
+var tmp = path.join(packageRes, 'raw-assets');
+var packageMenifest = path.join(tmp, 'project.manifest');
+console.log('packageMenifest', packageMenifest);
 mkdirSync(dest);
 //生成热更新目录
 mkdirSync(hotDir);
 
 //生成文件manifest到assets
-fs.writeFile(destManifest, JSON.stringify(manifest), (err) => {
-    if (err) throw err;
+let isfailed = fs.writeFileSync(destManifest, JSON.stringify(manifest));
+if (!isfailed) {
     console.log('Manifest successfully generated');
-});
+}
 //生成文件manifest到hotUpdate
-fs.writeFile(hotManifest, JSON.stringify(manifest), (err) => {
-    if (err) throw err;
+isfailed = fs.writeFileSync(hotManifest, JSON.stringify(manifest));
+if (!isfailed) {
     console.log('hotManifest successfully generated');
-});
+}
+//把生成的maifest 同步到build\jsb-xxx\res\raw-assets 而不需要再次构建重新生成
+// fs.writeFile(packageMenifest, JSON.stringify(manifest), (err) => {
+//     if (err) throw err;
+//     console.log('packageMenifest successfully generated');
+// });
 
 delete manifest.assets;
 delete manifest.searchPaths;
 
 //生成版本manifest到assets
-fs.writeFile(destVersion, JSON.stringify(manifest), (err) => {
-    if (err) throw err;
+isfailed = fs.writeFileSync(destVersion, JSON.stringify(manifest));
+if (!isfailed) {
     console.log('Version successfully generated');
-});
+}
 //生成版本manifest到hotUpdate
-fs.writeFile(hotVersion, JSON.stringify(manifest), (err) => {
-    if (err) throw err;
+isfailed = fs.writeFileSync(hotVersion, JSON.stringify(manifest));
+if (isfailed) {
     console.log('hotVersion successfully generated');
-});
-
+}
 /*
  * 复制目录、子目录，及其中的文件
  * @param src {String} 要复制的目录
  * @param dist {String} 复制到目标目录
  */
-function copyDir(src, dist, callback) {
-
-    fs.access(dist, function (err) {
-        if (err) {
-            // 目录不存在时创建目录
-            fs.mkdirSync(dist);
-        }
-        _copy(null, src, dist);
-    });
-
-    function _copy(err, src, dist) {
-        if (err) {
-            callback(err);
-        } else {
-            fs.readdir(src, function (err, paths) {
-                if (err) {
-                    callback(err);
-                } else {
-                    paths.forEach(function (path) {
-                        var _src = src + '/' + path;
-                        var _dist = dist + '/' + path;
-                        fs.stat(_src, function (err, stat) {
-                            if (err) {
-                                callback(err);
-                            } else {
-                                // 判断是文件还是目录
-                                if (stat.isFile()) {
-                                    fs.writeFileSync(_dist, fs.readFileSync(_src));
-                                } else if (stat.isDirectory()) {
-                                    // 当是目录是，递归复制
-                                    copyDir(_src, _dist, callback);
-                                }
-                            }
-                        });
-                    });
-                }
+function copyDirSync(path, dest) {
+    let flist = jetpack.list(path)
+    for (let i = 0; i < flist.length; i++) {
+        let absolutePath = `${path}/${flist[i]}`
+        if (jetpack.exists(absolutePath) == "file") { // 是文件则复制
+            jetpack.copy(absolutePath, `${dest}/${flist[i]}`, {
+                overwrite: true
             });
+        }
+        if (jetpack.exists(absolutePath) == "dir") { // 是目录则递归
+            copyDirSync(absolutePath, `${dest}/${flist[i]}`)
         }
     }
 }
@@ -249,25 +233,26 @@ const distResPath = path.join(hotDir, 'res');
 
 //复制src目录前，先删除原有目录
 rmdirSync(distSrcPath, (err) => {
-    console.log('err=', err);
+    err && console.log('err=', err);
     console.log('delete success');
 });
+
 //复制res目录前，先删除原有目录
 rmdirSync(distResPath, (err) => {
-    console.log('err=', err);
+    err && console.log('err=', err);
     console.log('delete success');
 });
 
 //复制src目录
-copyDir(srcPath, distSrcPath, function (err) {
-    if (err) {
-        console.log(err);
-    }
-});
+copyDirSync(srcPath, distSrcPath);
+console.log('copy finish ', srcPath);
 
 //复制res目录
-copyDir(resPath, distResPath, function (err) {
-    if (err) {
-        console.log(err);
-    }
-});
+copyDirSync(resPath, distResPath);
+console.log('copy finish ', resPath);
+
+//把生成的maifest 同步到build\jsb-xxx\res\raw-assets 而不需要再次构建重新生成
+fs.writeFileSync(packageMenifest, fs.readFileSync(hotManifest));
+console.log(`copy hotupdate to ${packageMenifest} successful`);
+
+console.log('build hotupdte finish');
