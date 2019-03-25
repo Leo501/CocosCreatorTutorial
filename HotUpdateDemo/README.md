@@ -17,3 +17,7 @@ npm install
 * 生成热更新文件
 进入tools，点击version_generator.bat 
 
+### 支持https
+* 打开工程，修改libcocos2dx工程中Cocos2dxDownloader.java类。找到new AsyncHttpClient() 修改成new AsyncHttpClient(true, 80, 443)
+* 参考文章：https://forum.cocos.com/t/https/52302
+
