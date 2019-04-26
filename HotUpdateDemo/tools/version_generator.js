@@ -51,7 +51,7 @@ while (i < process.argv.length) {
             i += 2;
             break;
         default:
-            i++;
+            i += 2;
             break;
     }
 }
@@ -117,8 +117,6 @@ var mkdirSync = function (path) {
 readDir(path.join(src, 'src'), manifest.assets);
 readDir(path.join(src, 'res'), manifest.assets);
 
-var destManifest = path.join(dest, 'project.manifest');
-var destVersion = path.join(dest, 'version.manifest');
 var hotManifest = path.join(hotDir, 'project.manifest');
 var hotVersion = path.join(hotDir, 'version.manifest');
 var tmp = path.join(packageRes, 'raw-assets');
@@ -128,30 +126,24 @@ mkdirSync(dest);
 //生成热更新目录
 mkdirSync(hotDir);
 
-//生成文件manifest到assets
-let isfailed = fs.writeFileSync(destManifest, JSON.stringify(manifest));
+
+//生成文件manifest转成hotProject.js
+let hotProjectPath = path.join(dest, 'hotManifest.js');
+console.log('create hotProject', hotProjectPath);
+isfailed = fs.writeFileSync(hotProjectPath, 'module.exports = ' + JSON.stringify(manifest));
 if (!isfailed) {
-    console.log('Manifest successfully generated');
+    console.log('hotManifest successfully generated');
 }
+
 //生成文件manifest到hotUpdate
 isfailed = fs.writeFileSync(hotManifest, JSON.stringify(manifest));
 if (!isfailed) {
     console.log('hotManifest successfully generated');
 }
-//把生成的maifest 同步到build\jsb-xxx\res\raw-assets 而不需要再次构建重新生成
-// fs.writeFile(packageMenifest, JSON.stringify(manifest), (err) => {
-//     if (err) throw err;
-//     console.log('packageMenifest successfully generated');
-// });
 
 delete manifest.assets;
 delete manifest.searchPaths;
 
-//生成版本manifest到assets
-isfailed = fs.writeFileSync(destVersion, JSON.stringify(manifest));
-if (!isfailed) {
-    console.log('Version successfully generated');
-}
 //生成版本manifest到hotUpdate
 isfailed = fs.writeFileSync(hotVersion, JSON.stringify(manifest));
 if (isfailed) {

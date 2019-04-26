@@ -8,7 +8,7 @@ const ErrCode = cc.Enum({
     downloadPackage: -10, //下载新包
 });
 
-const MD5 = require("Uint8ArrayMD5");
+let hotupdateManifest = require('hotManifest');
 
 cc.Class({
     extends: cc.Component,
@@ -19,7 +19,7 @@ cc.Class({
         //     type: cc.Asset,
         //     default: null
         // },
-        manifestUrl: cc.RawAsset,
+        // manifestUrl: cc.RawAsset,
         _hotUpdateName: 'game-remote-asset',
         _nowVersion: ''
     },
@@ -36,6 +36,8 @@ cc.Class({
             this.nextFn && nextFn(this._nowVersion);
             return;
         }
+        //如果是重新进入游戏，清除cache
+        this.clearHotupdateCacheTemp();
         let self = this;
         this._storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + this._hotUpdateName);
         this.versionCompareHandle = function (versionA, versionB) {
@@ -73,23 +75,10 @@ cc.Class({
 
         this._am.setVerifyCallback(function (path, asset) {
             var compressed = asset.compressed;
-            /**
-             * 计算md5
-             * @param {*} filePath 
-             */
-            let calMD5OfFile = function (filePath) {
-                return MD5(jsb.fileUtils.getDataFromFile(filePath));
-            };
-
             if (compressed) {
                 return true;
             } else {
-                var resMD5 = calMD5OfFile(path);
-                if (asset.md5 == resMD5) {
-                    return true;
-                }
-                jsb.fileUtils.removeFile(path);
-                return false;
+                return true;
             }
         });
 
@@ -162,7 +151,9 @@ cc.Class({
             //     url = cc.loader.md5Pipe.transformURL(url);
             // }
             // this._am.loadLocalManifest(url);
-            this._am.loadLocalManifest(this.manifestUrl);
+            // this._am.loadLocalManifest(this.manifestUrl);
+            var manifest = new jsb.Manifest(JSON.stringify(hotupdateManifest), this._storagePath);
+            this._am.loadLocalManifest(manifest, this._storagePath);
         }
         if (!this._am.getLocalManifest() || !this._am.getLocalManifest().isLoaded()) {
 
@@ -317,9 +308,22 @@ cc.Class({
         }
     },
 
-    //
+    //清除热更新文件
     clearHotupdateCache() {
+        if (cc.sys.isBrowser) {
+            return;
+        }
         let storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + this._hotUpdateName);
+        jsb.fileUtils.removeDirectory(storagePath);
+    },
+
+    //清除临时热更新文件
+    clearHotupdateCacheTemp() {
+        if (cc.sys.isBrowser) {
+            return;
+        }
+        console.log('temp file clear');
+        let storagePath = ((jsb.fileUtils ? jsb.fileUtils.getWritablePath() : '/') + this._hotUpdateName + '_temp');
         jsb.fileUtils.removeDirectory(storagePath);
     },
 
