@@ -29,6 +29,9 @@ cc.Class({
      * @param {*} nextFn 
      */
     init(nextFn, progressFn, failedFn) {
+        //如果之前热更新失败。清除临时文件
+        this.clearHotupdateCacheTemp();
+
         this.nextFn = nextFn;
         this.progressFn = progressFn;
         this.failedFn = failedFn;
@@ -205,7 +208,7 @@ cc.Class({
                 console.log('ERROR_NO_LOCAL_MANIFEST');
                 break;
             case jsb.EventAssetsManager.ERROR_DOWNLOAD_MANIFEST:
-                /*1下载配置文件错误*/
+            /*1下载配置文件错误*/
             case jsb.EventAssetsManager.ERROR_PARSE_MANIFEST:
                 /*2 解析文件错误*/
                 console.log('ERROR_PARSE_MANIFEST');
@@ -247,6 +250,8 @@ cc.Class({
     updateCb: function (event) {
         var needRestart = false;
         var failed = false;
+        var aleardyUpdate = false;
+
         switch (event.getEventCode()) {
             case jsb.EventAssetsManager.ERROR_NO_LOCAL_MANIFEST:
                 // this.panel.info.string = 'No local manifest file found, hot update skipped.';
@@ -264,6 +269,7 @@ cc.Class({
             case jsb.EventAssetsManager.ALREADY_UP_TO_DATE:
                 // this.panel.info.string = 'Already up to date with the latest remote version.';
                 failed = true;
+                aleardyUpdate = true;
                 break;
             case jsb.EventAssetsManager.UPDATE_FINISHED:
                 // console.log('UPDATE_FINISHED');
@@ -292,9 +298,7 @@ cc.Class({
             cc.eventManager.removeListener(this._updateListener);
             this._updateListener = null;
             this._updating = false;
-        }
-
-        if (needRestart) {
+        } else if (needRestart) {
             // console.log('Hotupdate success');
             cc.eventManager.removeListener(this._updateListener);
             this._updateListener = null;
@@ -305,6 +309,9 @@ cc.Class({
             jsb.fileUtils.setSearchPaths(searchPaths);
             cc.audioEngine.stopAll();
             cc.game.restart();
+        } else if (aleardyUpdate) {
+            //进入游戏
+            this.onEnterGame();
         }
     },
 
