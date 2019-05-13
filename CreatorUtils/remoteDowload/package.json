@@ -1,0 +1,17 @@
+{
+  "name": "httpdowload",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dowload.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "download": "^7.1.0",
+    "fs-jetpack": "^2.2.2",
+    "lei-download": "^1.0.2",
+    "request": "^2.88.0"
+  }
+}
