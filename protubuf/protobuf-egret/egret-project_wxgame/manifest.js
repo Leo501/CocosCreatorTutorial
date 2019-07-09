@@ -1,0 +1,7 @@
+require("js/egret.min.js")
+require("js/game.min.js")
+require("js/tween.min.js")
+require("js/assetsmanager.min.js")
+require("js/protobuf-library.min.js")
+require("js/protobuf-bundles.min.js")
+require("js/main.min.js")

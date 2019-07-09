@@ -1,0 +1,6 @@
+node_modules
+egret-project/bin-debug
+egret-project/libs
+egret-project/protobuf
+egret-project_wxgame/js
+egret-project_wxgame/resource

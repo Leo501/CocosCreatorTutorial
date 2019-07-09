@@ -1,0 +1,41 @@
+{
+		"engineVersion": "5.1.2",
+		"compilerVersion": "5.1.2",
+		"template": {},
+		"target": {
+				"current": "web"
+		},
+		"modules": [
+				{
+						"name": "egret"
+				},
+				{
+						"name": "game"
+				},
+				{
+						"name": "tween"
+				},
+				{
+						"name": "assetsmanager"
+				},
+				{
+						"name": "promise"
+				},
+				{
+						"name": "protobuf-library",
+						"path": "protobuf/library"
+				},
+				{
+						"name": "protobuf-bundles",
+						"path": "protobuf/bundles"
+				},
+				{
+						"name": "protobuf-library",
+						"path": "protobuf/library"
+				},
+				{
+						"name": "protobuf-bundles",
+						"path": "protobuf/bundles"
+				}
+		]
+}
