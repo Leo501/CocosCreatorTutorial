@@ -69,13 +69,15 @@ for (var i = 0; i < 100; i++) {
 }
 console.log('model', model);
 
-let obj = ['登山包', '旅行箱', '移动电源', '不中奖'];
+let obj = ['登山包', '旅行箱', '移动电源', '不中奖', '登山包1', '旅行箱1', '移动电源1', '不中奖1'];
 
-testRandom(100000, updateRandom, obj);
+// testRandom(100000, updateRandom, obj);
 
-testRandom(100000, randomInProbability(0.01, 0.03, 0.06, 0.9), obj);
+testRandom(100, randomInProbability([0.27, 0, 0.12, 0.1, 0.05, 0.15, 0.13, 0.08]), obj);
 
-testRandom(100000, randomInProbability(model), model);
+// testRandom(100000, randomInProbability(model), model);
+
+// [0.17,0.08,0.12,0.1,0.05,0.15,0.1,0.13]
 
 
 
