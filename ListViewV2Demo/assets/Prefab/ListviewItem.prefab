@@ -246,17 +246,16 @@
     "sync": false
   },
   {
-    "__type__": "a1b5dhqiGxCkqZ/KM1XymD/",
+    "__type__": "4d730hKafhH86WjXm0jYqWj",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 1
     },
     "_enabled": true,
-    "level": {
+    "label": {
       "__id__": 6
-    },
-    "_data": null
+    }
   },
   {
     "__type__": "cc.PrefabInfo",

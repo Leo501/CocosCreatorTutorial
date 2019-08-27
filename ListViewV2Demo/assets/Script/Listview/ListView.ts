@@ -1,12 +1,12 @@
-import { LayoutUtilTs } from "./layout_utilsTs"
-import { ListViewItemTs } from "./ListViewItemTs";
+import { LayoutUtil } from "./layout_utils"
+import { ListViewItem } from "./ListViewItem";
 
 export class ListViewTs {
     private scrollview: cc.ScrollView;
     private mask: cc.Mask;
     private content: cc.Node;
     private item_tpl: cc.Node;
-    private item_pool: ListViewItemTs[];
+    private item_pool: ListViewItem[];
 
     private dir: number;
     private width: number;
@@ -326,14 +326,14 @@ export class ListViewTs {
         }
     }
 
-    private spawn_item(index: number): ListViewItemTs {
-        let item: ListViewItemTs = this.item_pool.pop();
+    private spawn_item(index: number): ListViewItem {
+        let item: ListViewItem = this.item_pool.pop();
         if (!item) {
-            item = cc.instantiate(this.item_tpl).getComponent(this.item_class) as ListViewItemTs;
+            item = cc.instantiate(this.item_tpl).getComponent(this.item_class) as ListViewItem;
             item.node.active = true;
             //仅仅改变父节点锚点，子元素位置不会随之变化
             // item.node.setAnchorPoint(this.item_anchorX, this.item_anchorY);
-            LayoutUtilTs.set_pivot_smart(item.node, this.item_anchorX, this.item_anchorY);
+            LayoutUtil.set_pivot_smart(item.node, this.item_anchorX, this.item_anchorY);
             item.onInit();
             // cc.log("spawn_item", index);
         }
@@ -401,10 +401,10 @@ export class ListViewTs {
         for (let index = start, stop = this.packItems.length; index < stop; index++) {
             const packItem = this.packItems[index];
             if (this.dir == ListViewDir.Vertical) {
-                [packItem.x, packItem.y] = LayoutUtilTs.vertical_layout(index, this.item_width, this.item_height, this.col, this.gap_x, this.gap_y, this.padding_left, this.padding_top);
+                [packItem.x, packItem.y] = LayoutUtil.vertical_layout(index, this.item_width, this.item_height, this.col, this.gap_x, this.gap_y, this.padding_left, this.padding_top);
             }
             else {
-                [packItem.x, packItem.y] = LayoutUtilTs.horizontal_layout(index, this.item_width, this.item_height, this.row, this.gap_x, this.gap_y, this.padding_left, this.padding_top);
+                [packItem.x, packItem.y] = LayoutUtil.horizontal_layout(index, this.item_width, this.item_height, this.row, this.gap_x, this.gap_y, this.padding_left, this.padding_top);
             }
         }
     }
@@ -730,7 +730,7 @@ export class ListViewTs {
     }
 
     get renderedItems() {
-        const items: ListViewItemTs[] = [];
+        const items: ListViewItem[] = [];
         for (let i = this.start_index; i <= this.stop_index; i++) {
             const packItem = this.packItems[i];
             if (packItem && packItem.item) {
@@ -833,5 +833,5 @@ type PackItem = {
     y: number;
     data: any;
     is_select: boolean;
-    item: ListViewItemTs;
+    item: ListViewItem;
 }

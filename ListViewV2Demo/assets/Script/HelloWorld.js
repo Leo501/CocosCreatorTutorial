@@ -2,17 +2,13 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        label: {
-            default: null,
-            type: cc.Label
-        },
-        // defaults, set visually when attaching this script to the Canvas
-        text: 'Hello, World!'
+
+        listViewNode: cc.Node
     },
 
-    // use this for initialization
-    onLoad: function () {
-        this.label.string = this.text;
+    start() {
+        let script = this.listViewNode.getComponent('ListViewFactory');
+        script.init([1, 2, 3, 4, 5, 6, 7, 8, 9]);
     },
 
     // called every frame

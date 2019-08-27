@@ -1,5 +1,5 @@
 //item及父节点锚点都为(0,1)
-export class LayoutUtilTs
+export class LayoutUtil
 {
     static vertical_layout(index:number, item_width:number, item_height:number, column = 1, gap_x = 0, gap_y = 0, padding_left = 0, padding_top = 0):[number, number]
     {

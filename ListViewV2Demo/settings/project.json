@@ -20,15 +20,9 @@
     "width": 960,
     "height": 640
   },
-  "last-module-event-record-time": 0,
-  "facebook": {
+  "cocos-analytics": {
     "enable": false,
-    "appID": "",
-    "live": {
-      "enable": false
-    },
-    "audience": {
-      "enable": false
-    }
+    "appID": "13798",
+    "appSecret": "959b3ac0037d0f3c2fdce94f8421a9b2"
   }
 }

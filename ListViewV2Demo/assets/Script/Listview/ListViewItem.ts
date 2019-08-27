@@ -1,6 +1,6 @@
 const {ccclass, property} = cc._decorator;
 @ccclass
-export class ListViewItemTs extends cc.Component 
+export class ListViewItem extends cc.Component 
 {
     // constructor()
     // {

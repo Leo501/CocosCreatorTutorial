@@ -1,9 +1,9 @@
-import { ListViewItemTs } from "./Listview-ts/ListViewItemTs";
+import { ListViewItem } from "./Listview/ListViewItem";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class TestListView extends ListViewItemTs {
+export default class TestListViewItems extends ListViewItem {
 
     @property(cc.Label)
     label: cc.Label = null;
