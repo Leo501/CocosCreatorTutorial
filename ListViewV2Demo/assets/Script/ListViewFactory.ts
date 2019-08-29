@@ -53,6 +53,8 @@ export default class ListViewFactory extends cc.Component {
         });
         //显示
         this.listView.set_data(data);
+        this.scrollview.scrollToTop();
+        this.scrollview.stopAutoScroll();
     }
 
     update(dt) {
