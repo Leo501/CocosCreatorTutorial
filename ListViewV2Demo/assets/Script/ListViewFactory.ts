@@ -1,4 +1,4 @@
-import { ListViewTs } from "./Listview/listview";
+import { ListViewTs, ListViewParams } from "./Listview/listview";
 
 const { ccclass, property } = cc._decorator;
 
@@ -36,7 +36,14 @@ export default class ListViewFactory extends cc.Component {
 
     listView: ListViewTs;
 
-    init(data) {
+    init(data: Array<any>) {
+        //下一帧执行，当使用widget适配高宽，可以取得真实长度。
+        this.scheduleOnce(() => {
+            this._init(data);
+        }, 0);
+    }
+
+    _init(data: Array<any>) {
         //初始化
         let item = cc.instantiate(this.prefab);
         this.listView = new ListViewTs({

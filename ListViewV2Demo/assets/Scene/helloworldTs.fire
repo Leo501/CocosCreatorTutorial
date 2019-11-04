@@ -66,10 +66,10 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 13
+        "__id__": 15
       },
       {
-        "__id__": 14
+        "__id__": 16
       }
     ],
     "_prefab": null,
@@ -232,13 +232,16 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 10
-      },
-      {
         "__id__": 11
       },
       {
         "__id__": 12
+      },
+      {
+        "__id__": 13
+      },
+      {
+        "__id__": 14
       }
     ],
     "_prefab": null,
@@ -295,6 +298,9 @@
     "_components": [
       {
         "__id__": 9
+      },
+      {
+        "__id__": 10
       }
     ],
     "_prefab": null,
@@ -383,6 +389,34 @@
     "groupIndex": 0
   },
   {
+    "__type__": "cc.Widget",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 7
+    },
+    "_enabled": true,
+    "isAlignOnce": true,
+    "_target": {
+      "__id__": 2
+    },
+    "_alignFlags": 40,
+    "_left": 130,
+    "_right": 130,
+    "_top": 0,
+    "_bottom": 0,
+    "_verticalCenter": 0,
+    "_horizontalCenter": 0,
+    "_isAbsLeft": true,
+    "_isAbsRight": true,
+    "_isAbsTop": true,
+    "_isAbsBottom": true,
+    "_isAbsHorizontalCenter": true,
+    "_isAbsVerticalCenter": true,
+    "_originalWidth": 700,
+    "_originalHeight": 0
+  },
+  {
     "__type__": "cc.Mask",
     "_name": "",
     "_objFlags": 0,
@@ -423,6 +457,34 @@
     "_atlas": null
   },
   {
+    "__type__": "cc.Widget",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 6
+    },
+    "_enabled": true,
+    "isAlignOnce": true,
+    "_target": {
+      "__id__": 2
+    },
+    "_alignFlags": 40,
+    "_left": 130,
+    "_right": 130,
+    "_top": 185,
+    "_bottom": 185,
+    "_verticalCenter": 0,
+    "_horizontalCenter": 0,
+    "_isAbsLeft": true,
+    "_isAbsRight": true,
+    "_isAbsTop": true,
+    "_isAbsBottom": true,
+    "_isAbsHorizontalCenter": true,
+    "_isAbsVerticalCenter": true,
+    "_originalWidth": 700,
+    "_originalHeight": 270
+  },
+  {
     "__type__": "cc.ScrollView",
     "_name": "",
     "_objFlags": 0,
@@ -453,13 +515,13 @@
     },
     "_enabled": true,
     "scrollview": {
-      "__id__": 11
+      "__id__": 13
     },
     "content": {
       "__id__": 8
     },
     "mask": {
-      "__id__": 9
+      "__id__": 10
     },
     "prefab": {
       "__uuid__": "10c60cf0-420d-41d3-b409-ae1ebad07af7"

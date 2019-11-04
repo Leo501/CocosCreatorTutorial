@@ -804,7 +804,7 @@ export enum ListViewDir {
     Horizontal = 2,
 }
 
-type ListViewParams = {
+export type ListViewParams = {
     scrollview: cc.ScrollView;
     mask: cc.Mask;
     content: cc.Node;
