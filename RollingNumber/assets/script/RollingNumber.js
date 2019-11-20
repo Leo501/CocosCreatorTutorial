@@ -7,13 +7,13 @@ cc.Class({
     frameSpeedOffset: 0.05,
     lap: 2,
     finallyNumber: 2,
+    offset: cc.Vec2,
     prefab: cc.Prefab,
     spriteFrames: [cc.SpriteFrame]
   },
 
   onLoad() {
-
-    this.init();
+    this.isOver = true;
   },
 
   registerEvent() {
@@ -27,7 +27,7 @@ cc.Class({
     this.isOver = false;
     this.speed = this.startSpeed;
 
-    this.finallyNumber = data;
+    this.finallyNumber = data * 1;
 
     this.initRollNumbers(this.lap, this.finallyNumber);
     this.initItme();
@@ -52,15 +52,9 @@ cc.Class({
 
   initItme() {
     let len = 3, height;
-    if (this.items) {
-      for (let i = 1; i < this.items.length; i++) {
-        let item = this.items[i];
-        item.removeFromParent();
-      }
-    }
     this.items = [];
     let node = cc.instantiate(this.prefab);
-    height = node.height;
+    height = node.height + this.offset.y;
     this.endPos = cc.v2(0, -height);
     this.startPos = cc.v2(0, height * 2);
     this.node.addChild(node);
@@ -73,12 +67,21 @@ cc.Class({
     }
   },
 
+  onRemoveItem() {
+    let len = this.node.children.length;
+    for (let i = 0; i < len; i++) {
+      let item = this.node.children[i];
+      item.destroy();
+    }
+
+  },
+
   getCurIndex() {
     return this.rollNumbers[this.curIndex++];
   },
 
   onMoveItem(node, y) {
-    node.y += y;
+    node && (node.y += y);
   },
 
   onCheckBorder(node, borderPos) {
@@ -90,7 +93,7 @@ cc.Class({
   },
 
   setStartPos(node, startPos, borderPos) {
-    let offset = node.y - borderPos.y
+    let offset = node.y - borderPos.y;
     node.y = startPos.y + offset;
   },
 
@@ -180,6 +183,8 @@ cc.Class({
 
   onDisable() {
     this.offEvent();
+    this.onRemoveItem();
+    this.isOver = true;
   },
 
   offEvent() {
