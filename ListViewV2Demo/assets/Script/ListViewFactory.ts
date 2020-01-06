@@ -36,16 +36,26 @@ export default class ListViewFactory extends cc.Component {
 
     listView: ListViewTs;
 
-    init(data: Array<any>) {
+    init(data: Array<any>, offsetIndex: number = 0, time: number = 0.5) {
         //下一帧执行，当使用widget适配高宽，可以取得真实长度。
         this.scheduleOnce(() => {
-            this._init(data);
+            this._init(data, offsetIndex, time);
         }, 0);
     }
 
-    _init(data: Array<any>) {
+    append(data: any) {
+        if (!this.listView) {
+            this.init([data]);
+            return;
+        }
+        this.listView.append_data(data);
+    }
+
+    _init(data: Array<any>, offsetIndex: number = 0, time: number = 0.5) {
         //初始化
         let item = cc.instantiate(this.prefab);
+        let size = this.getItemSize(item, this.gap_x, this.gap_y);
+
         this.listView = new ListViewTs({
             scrollview: this.scrollview,
             mask: this.mask,
@@ -60,8 +70,26 @@ export default class ListViewFactory extends cc.Component {
         });
         //显示
         this.listView.set_data(data);
-        this.scrollview.scrollToTop();
-        this.scrollview.stopAutoScroll();
+        let realIdx = Math.floor(offsetIndex / this.column);
+        if (realIdx > 0) {
+            let offSet = this.setOffsetByIndex(realIdx, this.direction, size);
+            this.scrollview.scrollToOffset(offSet, time);
+        } else {
+            this.scrollview.scrollToTop();
+            this.scrollview.stopAutoScroll();
+        }
+    }
+
+    setOffsetByIndex(index: number, direction: number, size: cc.Size) {
+        if (direction == 1) {
+            return cc.v2(0, index * size.height);
+        } else {
+            return cc.v2(index * size.width, 0);
+        }
+    }
+
+    getItemSize(node: cc.Node, x: number, y: number) {
+        return cc.size(node.width + x, node.height + y);
     }
 
     update(dt) {
