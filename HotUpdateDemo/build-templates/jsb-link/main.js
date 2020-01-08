@@ -24,7 +24,12 @@
     }
     //版本比最近版本等于or大于。需要清理热更新cache;
     if (versionCompareHandle(version, curVersion) >= 0) {
-        hotUpdateSearchPaths && jsb.fileUtils.removeDirectory(hotUpdateSearchPaths);
+        if (hotUpdateSearchPaths) {
+            let list = JSON.parse(hotUpdateSearchPaths);
+            list.forEach((path) => {
+                jsb.fileUtils.removeDirectory(path);
+            });
+        }
     }
     //设置搜索路径
     if (window.cc && cc.sys.isNative) {
