@@ -10,7 +10,7 @@
 ~~~
 npm install
 ~~~
-安装Node的库
+安装Node的库 fs-jetpack 用于对文件操作
 
 * 构建Android 工程 选择link模式
 ![link](https://upload-images.jianshu.io/upload_images/2315803-f28aec8ccdff1858.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
