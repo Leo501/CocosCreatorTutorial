@@ -6,9 +6,6 @@
     "src": "../build/jsb-link/",
     "hotUpdateDirName": "hotUpdateFiles",
     "hotupdateDirExport": "exportHotUpdate",
-    "des": [
-        "../build/jsb-link/"
-    ],
     "zipDir": [
         "/res/import"
     ]

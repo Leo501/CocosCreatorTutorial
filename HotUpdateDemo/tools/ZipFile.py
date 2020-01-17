@@ -2,6 +2,7 @@ import os
 import os.path
 import zipfile
 import shutil
+import json
 
 relativePath = ''
 zipDirList = []
@@ -69,8 +70,10 @@ def checkDir(rootdir):
 def initParams(configPath):
     data = open(configPath, 'r')
     data = json.load(data)
-    relativePath = data.root + data.hotUpdateDirName
-    zipDirList = data.zipDir
+    global relativePath
+    relativePath = data['root'] + data['hotUpdateDirName']
+    global zipDirList
+    zipDirList = data['zipDir']
 
 
 def main():
@@ -82,3 +85,6 @@ def main():
         print(abspath)
         encodeDir(abspath)
     pass
+
+
+main()

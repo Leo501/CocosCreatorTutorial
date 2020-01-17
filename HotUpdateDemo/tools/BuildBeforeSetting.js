@@ -1,4 +1,4 @@
-const fileUtil = require('FileUtil');
+const fileUtil = require('./FileUtil');
 let version, androidVersionXml;
 
 function initParams(configPath) {
@@ -16,6 +16,6 @@ function repreatAndroidVersion(path) {
 
 function main(params) {
     initParams('./GameConfig.json');
-	//修改android 版本号
+    //修改android 版本号
     repreatAndroidVersion(androidVersionXml);
 }

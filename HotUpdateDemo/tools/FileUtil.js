@@ -14,16 +14,16 @@ function read(path) {
 }
 
 function readDir(dir, fn) {
-    if (jetpack.exits() == 'dir') {
+    if (jetpack.exists(dir) == 'dir') {
         let list = jetpack.list(dir);
         for (let i = 0; i < list.length; i++) {
             let name = list[i];
             if (name[0] === '.') continue;
-            let subPath = jetpach.path(dir, name);
-            if (jetpack.exits(subPath) == 'dir') {
+            let subPath = jetpack.path(dir, name);
+            if (jetpack.exists(subPath) == 'dir') {
                 readDir(subPath, fn);
-            } else if (jetpack.exits(subPath) == 'file') {
-                fn && fn(subpath);
+            } else if (jetpack.exists(subPath) == 'file') {
+                fn && fn(subPath);
             }
         }
     }
@@ -47,8 +47,8 @@ function write(path, data) {
  * "file" if path is a file.
  * "other" if none of the above.
  */
-function exits(path) {
-    const state = jetpack.exits(path);
+function exists(path) {
+    const state = jetpack.exists(path);
     return state;
 }
 
@@ -76,14 +76,12 @@ function dir(path) {
  * @param {*} src 
  * @param {*} des 
  */
-function copy(src, des) {
-    if (jetpack.exits(des)) {
+function copy(src, des, isClear) {
+    if (isClear && jetpack.exists(des)) {
         jetpack.remove(des);
     }
     //过滤文件 jetpack.copy('foo', 'bar', { matching: ['*.md', '!top-secret.md'] });
-    jetpack.copy(src, des, {
-        overwrite: true
-    });
+    jetpack.copy(src, des);
 }
 
 /**
@@ -120,10 +118,8 @@ function checkDir(dir) {
     jetpack.dir(dir);
 }
 
-function copyDir(src, des) {
-    if (jetpack.exists(des)) {
-        jetpack.remove(des);
-    }
+function copyDir(src, des, isClear) {
+    isClear && checkDir(des);
     jetpack.copy(src, des);
 }
 
@@ -131,7 +127,7 @@ module.exports = {
     read,
     readDir,
     write,
-    exits,
+    exists,
     list,
     dir,
     copy,

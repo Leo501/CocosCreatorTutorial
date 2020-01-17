@@ -1,4 +1,4 @@
-const fileUtil = require('FileUtil');
+const fileUtil = require('./FileUtil');
 
 let hotUpdateRoot, hotUpdateFile, exportHotUpdateDir, version, packageUrl;
 const hotUpdateDir = 'hotUpdate', dirNameTemplate = 'hotUpdate-v', time = Date.parse(new Date()) / 1000;
@@ -9,19 +9,15 @@ function initParams(configPath) {
     hotUpdateFile = hotUpdateRoot + data.hotUpdateDirName;
     exportHotUpdateDir = hotUpdateRoot + data.hotupdateDirExport;
     version = data.version;
-    packageUrl = packageUrl;
+    packageUrl = data.packageUrl;
 }
 
 function getVersion() {
     return version.replace(/\./g, '-');
 }
 
-const versionNo = getVersion();
-
-let dirName = `${dirNameTemplate}${versionNo}-${time}`;
-
 function reWritePackageUrl(dir, replaceName) {
-    let desPath = hotUpdateFile + '/' + dir;
+    let desPath = dir;
     let game = fileUtil.read(desPath);
     let conf = JSON.parse(game);
     conf.packageUrl = conf.packageUrl.replace(hotUpdateDir, replaceName);
@@ -31,16 +27,23 @@ function reWritePackageUrl(dir, replaceName) {
 
 function main() {
     initParams('./GameConfig.json');
+    const versionNo = getVersion(), dirName = `${dirNameTemplate}${versionNo}-${time}`;
+
     //消除目录文件
     fileUtil.checkDir(exportHotUpdateDir);
 
-    const time = Date.parse(new Date()) / 1000;
     let desPath = exportHotUpdateDir + '/' + dirName;
     //复制到新目录
     fileUtil.copyDir(hotUpdateFile, desPath);
 
-    reWritePackageUrl('project.manifest', dirName);
+    //复制project.manifest/version.manifest 
+    fileUtil.copy(hotUpdateFile + '/project.manifest', exportHotUpdateDir + '/project.manifest');
+    fileUtil.copy(hotUpdateFile + '/version.manifest', exportHotUpdateDir + '/version.manifest');
+    //修改project.manifest 中的packageUrl为新资源
+    reWritePackageUrl(exportHotUpdateDir + '/project.manifest', dirName);
 }
+
+main();
 
 
 

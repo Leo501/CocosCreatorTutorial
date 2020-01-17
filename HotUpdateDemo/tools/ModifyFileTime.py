@@ -33,8 +33,11 @@ def modify(rootdir):
 def initParams(configPath):
     data = open(configPath, 'r')
     data = json.load(data)
-    relativePath = data.root + data.hotUpdateDirName
-    zipDirList = data.zipDir
+    global relativePath
+    relativePath = data['root'] + data['hotUpdateDirName']
+    global zipDirList
+    zipDirList = data['zipDir']
+    des = data['des']
 
 
 def main():
