@@ -30,6 +30,7 @@ cc.Class({
     this.finallyNumber = data * 1;
 
     this.initRollNumbers(this.lap, this.finallyNumber);
+    this.onRemoveItem();
     this.initItme();
     for (let i = 0; i < this.items.length; i++) {
       let item = this.items[i];
