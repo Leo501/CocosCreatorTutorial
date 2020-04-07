@@ -38,7 +38,7 @@ cc.Class({
     this.curIndex = 0;
     this.isOver = true;
     this.speed = this.speedNormal;
-    this.direction = this.rollingBase.direction;
+    this.rollingBase.direction = this.direction;
 
     this.rollingBase.initClearItem();
     this.rollingBase.initItem(this.showCount);
@@ -57,7 +57,6 @@ cc.Class({
     this.curIndex = 0;
     this.isOver = false;
     this.speed = this.speedNormal;
-    this.direction = this.node.model.direction;
 
     this.fn = fn;
     this.soundFn = soundFn;
@@ -173,7 +172,7 @@ cc.Class({
     //移动
     for (i = 0; i < this.node.model.items.length; i++) {
       let item = this.node.model.items[i];
-      this.rollingBase.onMoveItem(item, -this.speed);
+      this.rollingBase.onMoveItem(item, this.speed);
     }
 
     //是否过界
@@ -182,13 +181,13 @@ cc.Class({
       if (this.direction == Direction.Vertical) {
         isBorder = this.rollingBase.onCheckBorder(item, this.node.model.borderDown);
       } else if (this.direction == Direction.Horizontal) {
-        isBorder = this.rollingBase.onCheckBorder(item, this.node.model.borderRight);
+        isBorder = this.rollingBase.onCheckBorder(item, this.node.model.borderLeft);
       }
       if (isBorder) {
         if (this.direction == Direction.Vertical) {
           this.rollingBase.setStartPos(item, this.node.model.borderUp, this.node.model.borderDown);
         } else if (this.direction == Direction.Horizontal) {
-          this.rollingBase.setStartPos(item, this.node.model.borderLeft, this.node.model.borderRight);
+          this.rollingBase.setStartPos(item, this.node.model.borderRight, this.node.model.borderLeft);
         }
         let index = this.getCurIndex();
         this.onSwithSpriteFrame(item, index);

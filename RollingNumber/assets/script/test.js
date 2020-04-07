@@ -8,14 +8,14 @@ cc.Class({
   },
 
   onLoad() {
-    this.rollingNubmer = this.rolling.getComponent('RollingNumber');
+    this.rollingNumbmer = this.rolling.getComponent('RollingNumber3');
     this.rollingNumber3 = this.rolling3.getComponent('RollingNumber3');
 
   },
 
   start() {
+    this.rollingNumbmer.init();
     this.rollingNumber3.init();
-
   },
 
   registerEvent() {
@@ -29,7 +29,8 @@ cc.Class({
   onEventClicked() {
     let number = this.editBox.string;
     console.log(number);
-    this.rollingNubmer.init(number * 1);
+    this.rollingNumbmer.initResult([number * 1]);
+
   },
 
   onEventClicked2() {

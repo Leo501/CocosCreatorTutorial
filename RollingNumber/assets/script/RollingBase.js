@@ -50,7 +50,7 @@ cc.Class({
       if (this.direction == Direction.Vertical) {
         node.y = posStart.y + i * height;
       } else if (this.direction == Direction.Horizontal) {
-        node.x = posStart.x += i * width;
+        node.x = posStart.x + i * width;
       }
       this.node.model.items.push(node);
       this.node.addChild(node);
@@ -65,14 +65,18 @@ cc.Class({
   },
 
   //初始化边界
-  initBorder(posStart, width, height, index) {
+  initBorder(posStart, width, height, count) {
 
     if (this.direction == Direction.Vertical) {
-      this.node.model.borderUp = cc.v2(0, posStart.y + height * index);
+      //起点
       this.node.model.borderDown = cc.v2(0, posStart.y - height);
+      //终点
+      this.node.model.borderUp = cc.v2(0, posStart.y + height * count);
     } else {
+      //起点
       this.node.model.borderLeft = cc.v2(posStart.x - width, 0);
-      this.node.model.borderRight = cc.v2(posStart.x + width * index, 0);
+      //终点
+      this.node.model.borderRight = cc.v2(posStart.x + width * count, 0);
     }
 
   },
@@ -80,9 +84,9 @@ cc.Class({
   //移动item
   onMoveItem(node, delta) {
     if (this.direction == Direction.Vertical) {
-      node && (node.y += delta);
+      node && (node.y -= delta);
     } else if (this.direction == Direction.Horizontal) {
-      node && (node.x += delta);
+      node && (node.x -= delta);
     }
   },
 
@@ -95,7 +99,7 @@ cc.Class({
         return false;
       }
     } else if (this.direction == Direction.Horizontal) {
-      if (node.x > borderPos.x) {
+      if (node.x < borderPos.x) {
         return true;
       } else {
         return false;
@@ -129,7 +133,7 @@ cc.Class({
     } else if (this.direction == Direction.Horizontal) {
       for (let i = 1; i < items.length; i++) {
         let item = items[i];
-        if (item.x > result.x) {
+        if (item.x < result.x) {
           result = item;
         }
       }
@@ -151,7 +155,7 @@ cc.Class({
     } else if (this.direction == Direction.Horizontal) {
       for (let i = 1; i < items.length; i++) {
         let item = items[i];
-        if (item.x < result.x) {
+        if (item.x > result.x) {
           result = item;
         }
       }
