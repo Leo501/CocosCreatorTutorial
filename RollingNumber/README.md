@@ -7,4 +7,4 @@
 * 如果有回弹，判断回弹方向
 
 ### 实现
-Vertical 垂直方向 
+[如图](https://github.com/Leo501/CocosCreatorTutorial/tree/master/image/RollingNumber_1.png)
