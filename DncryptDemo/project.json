@@ -1,0 +1,9 @@
+{
+  "engine": "cocos2d-html5",
+  "packages": "packages",
+  "version": "2.3.3",
+  "name": "DncryptDemo",
+  "uuid": "e24b7d1c-2b1a-4104-8f1d-26a2f8240f2f",
+  "id": "18b5027d-70b2-4bcd-9204-818c7ad35c72",
+  "isNew": false
+}
