@@ -1,0 +1,9 @@
+{
+  "engine": "cocos2d-html5",
+  "packages": "packages",
+  "version": "2.3.3",
+  "name": "ReceiveGoldAnimDemo",
+  "uuid": "79b4f11d-7930-454b-ba97-1d3b71509913",
+  "id": "a7bd712a-2352-47f6-a77d-63226364e9a4",
+  "isNew": false
+}
