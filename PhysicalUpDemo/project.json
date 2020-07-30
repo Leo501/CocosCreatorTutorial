@@ -1,0 +1,8 @@
+{
+  "engine": "cocos2d-html5",
+  "packages": "packages",
+  "version": "2.4.0",
+  "name": "PhysicalDownDemo",
+  "id": "653b239d-6bf1-45e2-af6a-23156d3842b1",
+  "isNew": false
+}
