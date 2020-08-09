@@ -1,0 +1,235 @@
+{
+  "ver": "1.1.0",
+  "uuid": "dc2073f0-957d-42c4-bde1-e912ae7a2b5f",
+  "scaleFactor": 1,
+  "boneCount": 30,
+  "precomputeJointMatrix": false,
+  "animationFrameRate": 30,
+  "subMetas": {
+    "buffer.bin": {
+      "ver": "1.0.0",
+      "uuid": "ee6408c2-35ef-4f05-bdc3-9048e4a8e0b9",
+      "name": "buffer.bin",
+      "subMetas": {}
+    },
+    "Box002.mesh": {
+      "ver": "1.0.1",
+      "uuid": "2a6e7251-7cb4-4aaf-a6b8-d4139097ab9c",
+      "verts": 1832,
+      "tris": 2814,
+      "submeshes": 1,
+      "attributes": [
+        [
+          "a_joints",
+          "a_normal",
+          "a_position",
+          "a_uv0",
+          "a_weights"
+        ]
+      ],
+      "minPos": {
+        "x": -0.598444759845734,
+        "y": -0.649927198886871,
+        "z": -0.196961551904678
+      },
+      "maxPos": {
+        "x": 0.598444759845734,
+        "y": 0.649927198886871,
+        "z": 0.196961551904678
+      },
+      "name": "Box002.mesh",
+      "subMetas": {}
+    },
+    "people001-0.skeleton": {
+      "ver": "1.0.1",
+      "uuid": "4fa9a064-3c69-4c6f-b9a4-f6038b38adbe",
+      "name": "people001-0.skeleton",
+      "subMetas": {}
+    },
+    "idle.sac": {
+      "ver": "1.0.1",
+      "uuid": "71581864-8bfc-4750-b680-8b8fe0a4c05c",
+      "modelUuid": "dc2073f0-957d-42c4-bde1-e912ae7a2b5f",
+      "animationID": 0,
+      "name": "idle.sac",
+      "maxFrameCount": 51,
+      "totalFrameCount": 533,
+      "duration": 2.0833332538604736,
+      "animationFrameRate": 30,
+      "subMetas": {}
+    },
+    "run.sac": {
+      "ver": "1.0.1",
+      "uuid": "11afb3d2-c478-43c9-a20b-abaa6568e3bd",
+      "modelUuid": "dc2073f0-957d-42c4-bde1-e912ae7a2b5f",
+      "animationID": 1,
+      "name": "run.sac",
+      "maxFrameCount": 21,
+      "totalFrameCount": 489,
+      "duration": 0.8333333134651184,
+      "animationFrameRate": 30,
+      "subMetas": {}
+    },
+    "dance.sac": {
+      "ver": "1.0.1",
+      "uuid": "7ac516c8-693e-440c-a670-d611ef4ff9a6",
+      "modelUuid": "dc2073f0-957d-42c4-bde1-e912ae7a2b5f",
+      "animationID": 2,
+      "name": "dance.sac",
+      "maxFrameCount": 118,
+      "totalFrameCount": 2995,
+      "duration": 4.875,
+      "animationFrameRate": 30,
+      "subMetas": {}
+    },
+    "attack.sac": {
+      "ver": "1.0.1",
+      "uuid": "85a27df1-661f-44c9-8d19-19b751bfc47c",
+      "modelUuid": "dc2073f0-957d-42c4-bde1-e912ae7a2b5f",
+      "animationID": 3,
+      "name": "attack.sac",
+      "maxFrameCount": 19,
+      "totalFrameCount": 252,
+      "duration": 0.75,
+      "animationFrameRate": 30,
+      "subMetas": {}
+    },
+    "die.sac": {
+      "ver": "1.0.1",
+      "uuid": "7953fefc-ce2a-47d3-9be5-b73b81d8e10d",
+      "modelUuid": "dc2073f0-957d-42c4-bde1-e912ae7a2b5f",
+      "animationID": 4,
+      "name": "die.sac",
+      "maxFrameCount": 43,
+      "totalFrameCount": 983,
+      "duration": 1.7916666269302368,
+      "animationFrameRate": 30,
+      "subMetas": {}
+    },
+    "people001.prefab": {
+      "ver": "1.2.7",
+      "uuid": "8c9c3331-f5ac-4c3d-87e5-5aae0064e329",
+      "optimizationPolicy": "AUTO",
+      "asyncLoadAssets": false,
+      "readonly": true,
+      "content": [
+        {
+          "__type__": "cc.Prefab",
+          "_name": "",
+          "_objFlags": 0,
+          "data": {
+            "__id__": 1
+          }
+        },
+        {
+          "__type__": "cc.Node",
+          "_name": "Sprite",
+          "_objFlags": 0,
+          "_opacity": 255,
+          "_color": {
+            "__type__": "cc.Color",
+            "r": 255,
+            "g": 255,
+            "b": 255,
+            "a": 255
+          },
+          "_cascadeOpacityEnabled": true,
+          "_parent": null,
+          "_anchorPoint": {
+            "__type__": "cc.Vec2",
+            "x": 0.5,
+            "y": 0.5
+          },
+          "_contentSize": {
+            "__type__": "cc.Size",
+            "width": 40,
+            "height": 36
+          },
+          "_children": [],
+          "_skewX": 0,
+          "_skewY": 0,
+          "_localZOrder": 0,
+          "_globalZOrder": 0,
+          "_tag": -1,
+          "_opacityModifyRGB": false,
+          "_reorderChildDirty": false,
+          "_id": "",
+          "_active": true,
+          "_components": [
+            {
+              "__id__": 2
+            }
+          ],
+          "_prefab": {
+            "__id__": 3
+          },
+          "_eulerAngles": {
+            "__type__": "cc.Vec3",
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "_trs": {
+            "__type__": "TypedArray",
+            "ctor": "Float64Array",
+            "array": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "__type__": "cc.Sprite",
+          "_name": "",
+          "_objFlags": 0,
+          "node": {
+            "__id__": 1
+          },
+          "_enabled": true,
+          "_spriteFrame": {
+            "__uuid__": "8cdb44ac-a3f6-449f-b354-7cd48cf84061"
+          },
+          "_type": 0,
+          "_sizeMode": 1,
+          "_fillType": 0,
+          "_fillCenter": {
+            "__type__": "cc.Vec2",
+            "x": 0,
+            "y": 0
+          },
+          "_fillStart": 0,
+          "_fillRange": 0,
+          "_isTrimmedMode": true,
+          "_srcBlendFactor": 770,
+          "_dstBlendFactor": 771,
+          "_atlas": null
+        },
+        {
+          "__type__": "cc.PrefabInfo",
+          "root": {
+            "__id__": 1
+          },
+          "asset": null,
+          "fileId": "d7118yAG5lKybkFOAh8koPL"
+        }
+      ],
+      "name": "people001.prefab",
+      "subMetas": {}
+    },
+    "03 - Default.mtl": {
+      "ver": "1.0.3",
+      "uuid": "546f85cd-bd34-42bd-9471-ad503d002d6b",
+      "dataAsSubAsset": null,
+      "name": "03 - Default.mtl",
+      "subMetas": {}
+    }
+  }
+}

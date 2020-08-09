@@ -1,0 +1,8 @@
+{
+  "engine": "cocos-creator-js",
+  "packages": "packages",
+  "name": "CameraDemo",
+  "id": "3f30aaba-94b8-402b-af70-7bfce0af6cd5",
+  "version": "2.4.0",
+  "isNew": false
+}
