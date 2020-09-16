@@ -1,0 +1,8 @@
+{
+  "engine": "cocos2d-html5",
+  "packages": "packages",
+  "version": "2.4.2",
+  "name": "RightLeftScrollDemo",
+  "id": "6ace3e40-21b6-4689-96f7-9a59c0638a13",
+  "isNew": false
+}
