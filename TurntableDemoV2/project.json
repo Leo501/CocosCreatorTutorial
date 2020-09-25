@@ -1,0 +1,8 @@
+{
+  "engine": "cocos2d-html5",
+  "packages": "packages",
+  "version": "2.4.2",
+  "name": "TurntableDemo",
+  "id": "99dcac25-6db8-421e-8461-1f83e1c7935c",
+  "isNew": false
+}

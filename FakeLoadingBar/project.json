@@ -1,0 +1,8 @@
+{
+  "engine": "cocos2d-html5",
+  "packages": "packages",
+  "version": "2.4.2",
+  "name": "FakeLoadingBar",
+  "id": "b0fcbce7-cd24-4c63-8a70-338d736d25a5",
+  "isNew": false
+}
