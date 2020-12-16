@@ -1,0 +1,78 @@
+// Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.  
+
+CCEffect %{
+  techniques:
+  - passes:
+    - vert: vs
+      frag: fs
+      depthStencilState:
+        depthTest: true
+        depthWrite: false
+      blendState:
+        targets:
+        - blend: true
+          blendSrc: src_alpha
+          blendDst: one_minus_src_alpha
+          blendDstAlpha: one_minus_src_alpha
+      rasterizerState:
+        cullMode: none
+      properties:
+        texture: { value: white }
+        startColor: { value: [1, 1, 1, 1], editor : { type: color } }
+        endColor: { value: [1, 1, 1, 1], editor : { type: color } }
+}%
+
+
+CCProgram vs %{
+  precision highp float;
+
+  #include <cc-global>
+  #include <cc-local>
+
+  in vec3 a_position;
+
+  in vec2 a_uv0;
+  out vec2 v_uv0;
+  #if USE_TEXTURE
+  #endif
+
+  void main () {
+    vec4 pos = vec4(a_position, 1);
+
+    pos = cc_matViewProj * cc_matWorld * pos;
+
+    v_uv0 = a_uv0;
+
+    gl_Position = pos;
+  }
+}%
+
+
+CCProgram fs %{
+  precision highp float;
+
+  in vec2 v_uv0;
+  #if USE_TEXTURE
+  uniform sampler2D texture;
+  #endif
+
+  uniform color {
+    vec4 startColor;
+    vec4 endColor;
+  };
+
+  void main () {
+    vec4 o = vec4(1, 1, 1, 1);
+
+    #if USE_TEXTURE
+    o *= texture(texture, v_uv0);
+    #endif
+
+    vec4 fade = endColor - startColor;
+    fade *= v_uv0.x;
+    fade += startColor;
+    o *= fade;
+
+    gl_FragColor = o;
+  }
+}%

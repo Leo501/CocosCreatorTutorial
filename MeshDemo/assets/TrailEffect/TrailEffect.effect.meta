@@ -1,0 +1,17 @@
+{
+  "ver": "1.0.25",
+  "uuid": "a1d78203-a464-4efb-8226-67c91adfbb50",
+  "compiledShaders": [
+    {
+      "glsl1": {
+        "vert": "\nprecision highp float;\nuniform mat4 cc_matViewProj;\nuniform mat4 cc_matWorld;\nattribute vec3 a_position;\nattribute vec2 a_uv0;\nvarying vec2 v_uv0;\n#if USE_TEXTURE\n#endif\nvoid main () {\n  vec4 pos = vec4(a_position, 1);\n  pos = cc_matViewProj * cc_matWorld * pos;\n  v_uv0 = a_uv0;\n  gl_Position = pos;\n}",
+        "frag": "\nprecision highp float;\nvarying vec2 v_uv0;\n#if USE_TEXTURE\nuniform sampler2D texture;\n#endif\nuniform vec4 startColor;\nuniform vec4 endColor;\nvoid main () {\n  vec4 o = vec4(1, 1, 1, 1);\n  #if USE_TEXTURE\n  o *= texture2D(texture, v_uv0);\n  #endif\n  vec4 fade = endColor - startColor;\n  fade *= v_uv0.x;\n  fade += startColor;\n  o *= fade;\n  gl_FragColor = o;\n}"
+      },
+      "glsl3": {
+        "vert": "\nprecision highp float;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\nin vec3 a_position;\nin vec2 a_uv0;\nout vec2 v_uv0;\n#if USE_TEXTURE\n#endif\nvoid main () {\n  vec4 pos = vec4(a_position, 1);\n  pos = cc_matViewProj * cc_matWorld * pos;\n  v_uv0 = a_uv0;\n  gl_Position = pos;\n}",
+        "frag": "\nprecision highp float;\nin vec2 v_uv0;\n#if USE_TEXTURE\nuniform sampler2D texture;\n#endif\nuniform color {\n  vec4 startColor;\n  vec4 endColor;\n};\nvoid main () {\n  vec4 o = vec4(1, 1, 1, 1);\n  #if USE_TEXTURE\n  o *= texture(texture, v_uv0);\n  #endif\n  vec4 fade = endColor - startColor;\n  fade *= v_uv0.x;\n  fade += startColor;\n  o *= fade;\n  gl_FragColor = o;\n}"
+      }
+    }
+  ],
+  "subMetas": {}
+}

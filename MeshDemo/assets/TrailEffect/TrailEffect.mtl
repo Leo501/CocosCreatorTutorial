@@ -1,0 +1,36 @@
+{
+  "__type__": "cc.Material",
+  "_name": "TrailEffect",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "a1d78203-a464-4efb-8226-67c91adfbb50"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "props": {
+        "endColor": {
+          "__type__": "cc.Color",
+          "r": 204,
+          "g": 0,
+          "b": 255,
+          "a": 57
+        },
+        "startColor": {
+          "__type__": "cc.Color",
+          "r": 201,
+          "g": 45,
+          "b": 45,
+          "a": 172
+        },
+        "texture": {
+          "__uuid__": "a8027877-d8d6-4645-97a0-52d4a0123dba"
+        }
+      },
+      "defines": {
+        "USE_TEXTURE": true
+      }
+    }
+  }
+}
