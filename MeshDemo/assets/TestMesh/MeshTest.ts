@@ -5,12 +5,13 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-const { ccclass, property } = cc._decorator;
+const { ccclass, property,executeInEditMode } = cc._decorator;
 
 // const renderEngine = cc.renderer.renderEngine;
 const gfx = cc.gfx;
 
 @ccclass
+@executeInEditMode
 export default class MeshTest extends cc.Component {
 
     mr_model: cc.MeshRenderer = null;
