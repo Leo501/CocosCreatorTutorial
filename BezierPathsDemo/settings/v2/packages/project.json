@@ -1,0 +1,13 @@
+{
+  "__version__": "1.0.1",
+  "script": {
+    "useDefineForClassFields": false,
+    "allowDeclareFields": false
+  },
+  "general": {
+    "designResolution": {
+      "width": 720,
+      "height": 1280
+    }
+  }
+}
