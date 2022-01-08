@@ -1,5 +1,5 @@
 {
-  "ver": "2.0.10",
+  "ver": "2.0.14",
   "importer": "fbx",
   "imported": true,
   "uuid": "aade09ee-8f9d-413c-a9e8-8c686ea5e160",
@@ -87,7 +87,7 @@
       "displayName": "",
       "id": "9787f",
       "name": "grass.texture",
-      "ver": "1.0.20",
+      "ver": "1.0.21",
       "imported": true,
       "files": [
         ".json"
@@ -100,7 +100,7 @@
         "magfilter": "linear",
         "mipfilter": "none",
         "premultiplyAlpha": false,
-        "anisotropy": 1,
+        "anisotropy": 0,
         "isUuid": true,
         "imageUuidOrDatabaseUri": "aade09ee-8f9d-413c-a9e8-8c686ea5e160@80e0c"
       }

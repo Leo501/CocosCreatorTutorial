@@ -24,18 +24,18 @@
         "isRGBE": false,
         "imageDatabaseUri": "db://assets/skybox/sunnySkyBox.jpg"
       },
-      "ver": "1.0.9",
+      "ver": "1.0.10",
       "imported": true,
       "files": [
         ".json"
       ],
       "subMetas": {
-        "7d38f": {
+        "e9a6d": {
           "importer": "texture-cube-face",
-          "uuid": "5af201b5-5951-4e2c-a81f-ac4aad9132cb@b47c0@7d38f",
+          "uuid": "5af201b5-5951-4e2c-a81f-ac4aad9132cb@b47c0@e9a6d",
           "displayName": "",
-          "id": "7d38f",
-          "name": "bottom",
+          "id": "e9a6d",
+          "name": "front",
           "userData": {},
           "ver": "1.0.0",
           "imported": true,
@@ -60,12 +60,12 @@
           ],
           "subMetas": {}
         },
-        "e9a6d": {
+        "bb97f": {
           "importer": "texture-cube-face",
-          "uuid": "5af201b5-5951-4e2c-a81f-ac4aad9132cb@b47c0@e9a6d",
+          "uuid": "5af201b5-5951-4e2c-a81f-ac4aad9132cb@b47c0@bb97f",
           "displayName": "",
-          "id": "e9a6d",
-          "name": "front",
+          "id": "bb97f",
+          "name": "top",
           "userData": {},
           "ver": "1.0.0",
           "imported": true,
@@ -75,12 +75,12 @@
           ],
           "subMetas": {}
         },
-        "bb97f": {
+        "7d38f": {
           "importer": "texture-cube-face",
-          "uuid": "5af201b5-5951-4e2c-a81f-ac4aad9132cb@b47c0@bb97f",
+          "uuid": "5af201b5-5951-4e2c-a81f-ac4aad9132cb@b47c0@7d38f",
           "displayName": "",
-          "id": "bb97f",
-          "name": "top",
+          "id": "7d38f",
+          "name": "bottom",
           "userData": {},
           "ver": "1.0.0",
           "imported": true,
