@@ -35,6 +35,10 @@ export default class TweemTest extends cc.Component {
             this.progressAction(this.targetNode);
         } else if (custom == '8') {
             this.stopAction(this.curTw)
+        } else if (custom == "9") {
+            this.bezierAction(this.targetNode);
+        } else if (custom == "10") {
+            this.stopAction(this.curTw);
         }
     }
 
@@ -206,6 +210,13 @@ export default class TweemTest extends cc.Component {
                 current = start + (end - start) * time;
                 return current;
             }
+        }).union().repeatForever().start();
+    }
+
+    bezierAction(node: cc.Node) {
+        this.resetNode(node);
+        this.curTw = cc.tween(node).bezierTo(5, cc.v2(0, 0), cc.v2(150, 350), cc.v2(300, 0)).call(() => {
+            this.resetNode(node);
         }).union().repeatForever().start();
     }
 

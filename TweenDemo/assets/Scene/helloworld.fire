@@ -923,7 +923,7 @@
     "component": "",
     "_componentId": "f6462UR+MlIhI9Hg1W9ywCa",
     "handler": "onEventClick",
-    "customEventData": "7"
+    "customEventData": "9"
   },
   {
     "__type__": "cc.Node",
@@ -1308,7 +1308,7 @@
     "component": "",
     "_componentId": "f6462UR+MlIhI9Hg1W9ywCa",
     "handler": "onEventClick",
-    "customEventData": "8"
+    "customEventData": "10"
   },
   {
     "__type__": "cc.Canvas",
