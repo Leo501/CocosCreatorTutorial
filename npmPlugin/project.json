@@ -1,0 +1,8 @@
+{
+  "engine": "cocos-creator-js",
+  "packages": "packages",
+  "name": "npmPlugin",
+  "id": "a5d78104-575f-45ec-9f34-1650d99e24e6",
+  "version": "2.4.5",
+  "isNew": false
+}

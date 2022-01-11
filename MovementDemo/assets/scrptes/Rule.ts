@@ -21,8 +21,14 @@ export class Rule extends Component {
     @property({ type: Movement, displayName: "移动组件" })
     moveComponent: Movement = null;
 
+    onLoad() {
+        this.moveComponent.speed = 50;
+        this.moveComponent.radius = 100;
+    }
+
     start() {
         // [3]
+
     }
 
     onEnable() {
@@ -57,7 +63,7 @@ export class Rule extends Component {
     }
 
     update(deltaTime: number) {
-        // this.moveCircel(deltaTime);
+        this.moveCircel(deltaTime);
         // this.moveComponent.line(deltaTime);
     }
 }
