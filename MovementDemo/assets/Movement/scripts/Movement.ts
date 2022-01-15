@@ -14,6 +14,14 @@ export class Movement extends Component {
     center: Vec2 = new Vec2();
 
     /**
+     * 设置初始位置
+     * @param pos 
+     */
+    setPostion(pos: Vec2) {
+        this.node.position = new Vec3(pos.x, pos.y);
+    }
+
+    /**
      * 距离增量
      * @param time 
      * @returns 
@@ -23,13 +31,23 @@ export class Movement extends Component {
     }
 
     /**
+     * 计算时间
+     * @param distance 
+     * @returns 
+     */
+    deltaTime(distance: number) {
+        return distance / this.speed
+    }
+
+    /**
      * 角度增量
      * @param time 
      * @returns 
      */
     deltaAngle(time: number) {
         let distance = this.deltaDistance(time);
-        return distance / this.radius;
+        let delta = distance / this.radius;
+        return -delta;
     }
 
     /**
@@ -42,9 +60,11 @@ export class Movement extends Component {
         this.angle += delta;
         if (this.angle > Math.PI * 2) {
             this.angle -= Math.PI * 2;
+        } else if (this.angle < Math.PI * 2) {
+            this.angle += Math.PI * 2;
         }
-        let x = this.radius * Math.cos(this.angle);
-        let y = this.radius * Math.sin(this.angle);
+        let x = this.center.x + this.radius * Math.cos(this.angle);
+        let y = this.center.y + this.radius * Math.sin(this.angle);
         this.node.position = new Vec3(x, y, this.node.position.z);
     }
 

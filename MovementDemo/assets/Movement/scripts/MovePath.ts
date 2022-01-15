@@ -36,54 +36,63 @@ export class MovePath extends Component {
         displayName: "移动组件"
     })
     private movement: Movement = null;
+    // @property({ type: Node, displayName: "移动节点" })
+    // private target:
 
     private pathList: PathInfo[] = [];
     private curPath: PathInfo = null;
-    private curDistance: number;
+    private curDistance: number = 0;
     private curIndex: number = 0;
 
-    start() {
+
+    onLoad() {
         let p1 = new PathInfo();
         p1.type = PathType.line;
         p1.speed = 50;
         p1.angle = -Math.PI / 2;
-        p1.startPos = v2(200, 200);
-        p1.distance = 400;
+        p1.startPos = v2(100, 100);
+        p1.distance = 200;
         this.pathList.push(p1);
 
         p1 = new PathInfo();
-        p1.type = PathType.line;
+        p1.type = PathType.circle;
         p1.speed = 50;
-        p1.angle = Math.PI
-        p1.startPos = v2(200, -200);
-        p1.distance = 400;
+        p1.angle = 0;
+        p1.radius = 100;
+        p1.startPos = v2(100, -100);
+        p1.distance = 100 * Math.PI;
+        p1.center = v2(0, -100);
         this.pathList.push(p1);
 
         p1 = new PathInfo();
         p1.type = PathType.line;
         p1.speed = 50;
         p1.angle = Math.PI / 2
-        p1.startPos = v2(-200, -200);
-        p1.distance = 400;
+        p1.startPos = v2(-100, -100);
+        p1.distance = 200;
         this.pathList.push(p1);
 
         p1 = new PathInfo();
-        p1.type = PathType.line;
+        p1.type = PathType.circle;
         p1.speed = 50;
-        p1.angle = 0;
-        p1.startPos = v2(-200, 200);
-        p1.distance = 400;
+        p1.angle = Math.PI;
+        p1.radius = 100;
+        p1.startPos = v2(-100, 100);
+        p1.distance = p1.radius * Math.PI;
+        p1.center = v2(0, 100);
         this.pathList.push(p1);
 
-        this.curPath = this.getPathInfo();
+        this.initPathInfo();
+        this.initMovement();
     }
 
     addIndex() {
         this.curIndex++;
     }
 
-    getPathInfo() {
-        return this.pathList[this.curIndex];
+    initPathInfo() {
+        let index = this.curIndex % this.pathList.length;
+        this.curPath = this.pathList[index];
     }
 
     initMovement() {
@@ -91,12 +100,33 @@ export class MovePath extends Component {
         this.movement.speed = this.curPath.speed;
         this.movement.radius = this.curPath.radius;
         this.movement.center = this.curPath.center;
+        this.movement.setPostion(this.curPath.startPos);
+    }
+
+    move(dt) {
+        if (this.curPath.type == PathType.line) {
+            this.movement.line(dt);
+        } else if (this.curPath.type == PathType.circle) {
+            this.movement.circle(dt);
+        }
     }
 
     update(deltaTime: number) {
         if (null != this.curPath) {
-            this.curDistance < this.curPath.distance;
-
+            let distance = this.movement.deltaDistance(deltaTime);
+            let left = this.curPath.distance - this.curDistance;
+            while (distance > left) {
+                let t = this.movement.deltaTime(left);
+                deltaTime -= t;
+                this.addIndex();
+                this.initPathInfo();
+                this.initMovement();
+                this.curDistance = 0;
+                distance = this.movement.deltaDistance(deltaTime);
+                left = this.curPath.distance - this.curDistance;
+            }
+            this.move(deltaTime);
+            this.curDistance += distance;
         }
     }
 }
