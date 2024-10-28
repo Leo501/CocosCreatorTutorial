@@ -28,13 +28,13 @@ enum State {
 }
 export class Turntalbe {
     /**设置a */
-    private a = 200;
+    private a = 1000;
     /**没有用到 */
     private b = 0;
     /**开始角度 */
     private c = 0;
     /**运行圈数 */
-    private turnTimer = 5;
+    private turnTimer = 2;
     /**运行的距离 */
     private distanceY: number[] = [0, 0, 0];
     /**需要的时间 */

@@ -1,11 +1,11 @@
 {
-  "ver": "1.0.22",
+  "ver": "1.0.26",
   "importer": "image",
   "imported": true,
   "uuid": "e037175e-d2b3-494e-a6b5-a6f08ddfca5f",
   "files": [
-    ".png",
-    ".json"
+    ".json",
+    ".png"
   ],
   "subMetas": {
     "GodWheel_beiJing": {
@@ -50,9 +50,10 @@
         "mipfilter": "none",
         "anisotropy": 0,
         "isUuid": true,
-        "imageUuidOrDatabaseUri": "e037175e-d2b3-494e-a6b5-a6f08ddfca5f"
+        "imageUuidOrDatabaseUri": "e037175e-d2b3-494e-a6b5-a6f08ddfca5f",
+        "visible": false
       },
-      "ver": "1.0.21",
+      "ver": "1.0.22",
       "imported": true,
       "files": [
         ".json"
@@ -84,9 +85,67 @@
         "packable": true,
         "isUuid": true,
         "imageUuidOrDatabaseUri": "e037175e-d2b3-494e-a6b5-a6f08ddfca5f@6c48a",
-        "atlasUuid": ""
+        "atlasUuid": "",
+        "pixelsToUnit": 100,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "meshType": 0,
+        "vertices": {
+          "rawPosition": [
+            -258.5,
+            -259,
+            0,
+            258.5,
+            -259,
+            0,
+            -258.5,
+            259,
+            0,
+            258.5,
+            259,
+            0
+          ],
+          "indexes": [
+            0,
+            1,
+            2,
+            2,
+            1,
+            3
+          ],
+          "uv": [
+            59,
+            577,
+            576,
+            577,
+            59,
+            59,
+            576,
+            59
+          ],
+          "nuv": [
+            0.09276729559748427,
+            0.09247648902821316,
+            0.9056603773584906,
+            0.09247648902821316,
+            0.09276729559748427,
+            0.9043887147335423,
+            0.9056603773584906,
+            0.9043887147335423
+          ],
+          "minPos": [
+            -258.5,
+            -259,
+            0
+          ],
+          "maxPos": [
+            258.5,
+            259,
+            0
+          ]
+        }
       },
-      "ver": "1.0.9",
+      "ver": "1.0.12",
       "imported": true,
       "files": [
         ".json"
@@ -100,6 +159,7 @@
     "redirect": "e037175e-d2b3-494e-a6b5-a6f08ddfca5f@f9941",
     "compressSettings": {
       "useCompressTexture": false
-    }
+    },
+    "fixAlphaTransparencyArtifacts": false
   }
 }

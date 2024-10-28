@@ -4,5 +4,11 @@
       "width": 720,
       "height": 1280
     }
+  },
+  "__version__": "1.0.5",
+  "fbx": {
+    "legacyFbxImporter": {
+      "visible": true
+    }
   }
 }

@@ -1,11 +1,11 @@
 {
-  "ver": "1.0.22",
+  "ver": "1.0.26",
   "importer": "image",
   "imported": true,
   "uuid": "9ce20cec-5cad-408d-887a-b5a6c6fb586d",
   "files": [
-    ".png",
-    ".json"
+    ".json",
+    ".png"
   ],
   "subMetas": {
     "GodWheel_deng2": {
@@ -50,9 +50,10 @@
         "mipfilter": "none",
         "anisotropy": 0,
         "isUuid": true,
-        "imageUuidOrDatabaseUri": "9ce20cec-5cad-408d-887a-b5a6c6fb586d"
+        "imageUuidOrDatabaseUri": "9ce20cec-5cad-408d-887a-b5a6c6fb586d",
+        "visible": false
       },
-      "ver": "1.0.21",
+      "ver": "1.0.22",
       "imported": true,
       "files": [
         ".json"
@@ -84,9 +85,67 @@
         "packable": true,
         "isUuid": true,
         "imageUuidOrDatabaseUri": "9ce20cec-5cad-408d-887a-b5a6c6fb586d@6c48a",
-        "atlasUuid": ""
+        "atlasUuid": "",
+        "pixelsToUnit": 100,
+        "pivotX": 0.5,
+        "pivotY": 0.5,
+        "meshType": 0,
+        "vertices": {
+          "rawPosition": [
+            -311,
+            -303,
+            0,
+            311,
+            -303,
+            0,
+            -311,
+            303,
+            0,
+            311,
+            303,
+            0
+          ],
+          "indexes": [
+            0,
+            1,
+            2,
+            2,
+            1,
+            3
+          ],
+          "uv": [
+            1,
+            614,
+            623,
+            614,
+            1,
+            8,
+            623,
+            8
+          ],
+          "nuv": [
+            0.0016025641025641025,
+            0.01282051282051282,
+            0.9983974358974359,
+            0.01282051282051282,
+            0.0016025641025641025,
+            0.9839743589743589,
+            0.9983974358974359,
+            0.9839743589743589
+          ],
+          "minPos": [
+            -311,
+            -303,
+            0
+          ],
+          "maxPos": [
+            311,
+            303,
+            0
+          ]
+        }
       },
-      "ver": "1.0.9",
+      "ver": "1.0.12",
       "imported": true,
       "files": [
         ".json"
@@ -97,6 +156,7 @@
   "userData": {
     "hasAlpha": true,
     "type": "sprite-frame",
-    "redirect": "9ce20cec-5cad-408d-887a-b5a6c6fb586d@f9941"
+    "redirect": "9ce20cec-5cad-408d-887a-b5a6c6fb586d@f9941",
+    "fixAlphaTransparencyArtifacts": false
   }
 }
