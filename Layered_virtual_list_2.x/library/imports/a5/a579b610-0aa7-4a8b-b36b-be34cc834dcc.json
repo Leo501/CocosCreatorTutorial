@@ -1,0 +1,7 @@
+{
+  "__type__": "cc.BufferAsset",
+  "_name": "buffer",
+  "_objFlags": 0,
+  "_native": ".bin",
+  "buffer": null
+}

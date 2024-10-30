@@ -1,0 +1,653 @@
+{
+  "__type__": "cc.EffectAsset",
+  "_name": "builtin-phong",
+  "_objFlags": 0,
+  "_native": "",
+  "properties": null,
+  "techniques": [
+    {
+      "passes": [
+        {
+          "name": "phong",
+          "rasterizerState": {
+            "cullMode": 1029
+          },
+          "depthStencilState": {
+            "depthTest": true,
+            "depthWrite": true
+          },
+          "properties": {
+            "alphaThreshold": {
+              "value": [
+                0.5
+              ],
+              "type": 13
+            },
+            "mainTiling": {
+              "value": [
+                1,
+                1
+              ],
+              "type": 14
+            },
+            "mainOffset": {
+              "value": [
+                0,
+                0
+              ],
+              "type": 14
+            },
+            "diffuseColor": {
+              "value": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "editor": {
+                "type": "color"
+              },
+              "type": 16
+            },
+            "diffuseTexture": {
+              "value": "white",
+              "type": 29
+            },
+            "specularColor": {
+              "value": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "editor": {
+                "type": "color"
+              },
+              "type": 16
+            },
+            "specularTexture": {
+              "value": "white",
+              "type": 29
+            },
+            "emissiveColor": {
+              "value": [
+                0,
+                0,
+                0,
+                1
+              ],
+              "editor": {
+                "type": "color"
+              },
+              "type": 16
+            },
+            "emissiveTexture": {
+              "value": "white",
+              "type": 29
+            },
+            "glossiness": {
+              "value": [
+                10
+              ],
+              "type": 13
+            },
+            "normalTexture": {
+              "value": "white",
+              "type": 29
+            }
+          },
+          "program": "builtin-phong|phong-vs|phong-fs"
+        },
+        {
+          "name": "shadowcast",
+          "stage": "shadowcast",
+          "rasterizerState": {
+            "cullMode": 1029
+          },
+          "depthStencilState": {
+            "depthTest": true,
+            "depthWrite": true
+          },
+          "program": "builtin-phong|shadow-map-vs|shadow-map-fs"
+        }
+      ]
+    }
+  ],
+  "shaders": [
+    {
+      "hash": 3560892936,
+      "glsl3": {
+        "vert": "\nprecision highp float;\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\n#if CC_USE_SKINNING\n  in vec4 a_weights;\n  in vec4 a_joints;\n  #if CC_USE_JOINTS_TEXTRUE\n    uniform SKINNING {\n      vec2 jointsTextureSize;\n    };\n    uniform sampler2D jointsTexture;\n    #if CC_JOINTS_TEXTURE_FLOAT32\n      mat4 getBoneMatrix(const in float i) {\n        float width = jointsTextureSize.x;\n        float height = jointsTextureSize.y;\n        float j = i * 4.0;\n        float x = mod(j, width);\n        float y = floor(j / width);\n        float dx = 1.0 / width;\n        float dy = 1.0 / height;\n        y = dy * (y + 0.5);\n        vec4 v1 = texture(jointsTexture, vec2(dx * (x + 0.5), y));\n        vec4 v2 = texture(jointsTexture, vec2(dx * (x + 1.5), y));\n        vec4 v3 = texture(jointsTexture, vec2(dx * (x + 2.5), y));\n        vec4 v4 = texture(jointsTexture, vec2(dx * (x + 3.5), y));\n        return mat4(v1, v2, v3, v4);\n      }\n    #else\n      float decode32(vec4 rgba) {\n        float Sign = 1.0 - step(128.0, rgba[0]) * 2.0;\n        float Exponent = 2.0 * mod(rgba[0], 128.0) + step(128.0, rgba[1]) - 127.0;\n        float Mantissa = mod(rgba[1], 128.0) * 65536.0 + rgba[2] * 256.0 + rgba[3] + 8388608.0;\n        return Sign * exp2(Exponent - 23.0) * Mantissa;\n      }\n      vec4 decodevec4 (vec4 x, vec4 y, vec4 z, vec4 w) {\n        return vec4(\n          decode32(x.wzyx * 255.0),\n          decode32(y.wzyx * 255.0),\n          decode32(z.wzyx * 255.0),\n          decode32(w.wzyx * 255.0)\n        );\n      }\n      vec4 decodevec4 (float dx, float x, float y) {\n        return decodevec4(\n          texture(jointsTexture, vec2(dx * (x + 0.5), y)),\n          texture(jointsTexture, vec2(dx * (x + 1.5), y)),\n          texture(jointsTexture, vec2(dx * (x + 2.5), y)),\n          texture(jointsTexture, vec2(dx * (x + 3.5), y))\n        );\n      }\n      mat4 getBoneMatrix(const in float i) {\n        float width = jointsTextureSize.x;\n        float height = jointsTextureSize.y;\n        float j = i * 16.0;\n        float x = mod(j, width);\n        float y = floor(j / width);\n        float dx = 1.0 / width;\n        float dy = 1.0 / height;\n        y = dy * (y + 0.5);\n        vec4 v1 = decodevec4(dx, x,       y);\n        vec4 v2 = decodevec4(dx, x+4.0,   y);\n        vec4 v3 = decodevec4(dx, x+8.0,   y);\n        vec4 v4 = decodevec4(dx, x+12.0,  y);\n        return mat4(v1, v2, v3, v4);\n      }\n    #endif\n  #else\n    uniform JOINT_MATRIX {\n      mat4 jointMatrices[50];\n    };\n    mat4 getBoneMatrix(const in float i) {\n      return jointMatrices[int(i)];\n    }\n  #endif\n    mat4 skinMatrix() {\n      return\n        getBoneMatrix(a_joints.x) * a_weights.x +\n        getBoneMatrix(a_joints.y) * a_weights.y +\n        getBoneMatrix(a_joints.z) * a_weights.z +\n        getBoneMatrix(a_joints.w) * a_weights.w\n        ;\n    }\n#endif\nstruct StandardVertInput {\n  vec2 uv;\n  vec4 position;\n  vec3 normal;\n  vec4 tangent;\n  vec4 color;\n};\nin vec3 a_position;\n#if CC_USE_ATTRIBUTE_UV0\nin vec2 a_uv0;\n#endif\n#if CC_USE_ATTRIBUTE_COLOR\nin vec4 a_color;\n#endif\n#if CC_USE_ATTRIBUTE_NORMAL\nin vec3 a_normal;\n#endif\n#if CC_USE_ATTRIBUTE_TANGENT\nin vec4 a_tangent;\n#endif\nvoid CCAttribute (out StandardVertInput In) {\n  In.position = vec4(a_position, 1.0);\n  #if CC_USE_ATTRIBUTE_UV0\n    In.uv = a_uv0;\n  #else\n    In.uv = vec2(0.0);\n  #endif\n  #if CC_USE_ATTRIBUTE_COLOR\n    In.color = a_color;\n  #else\n    In.color = vec4(1.0);\n  #endif\n  #if CC_USE_ATTRIBUTE_NORMAL\n    In.normal = a_normal;\n  #else\n    In.normal = vec3(0.0, 1.0, 0.0);\n  #endif\n  #if CC_USE_ATTRIBUTE_TANGENT\n    In.tangent = a_tangent;\n  #else\n    In.tangent = vec4(1.0, 0.0, 0.0, 0.0);\n  #endif\n}\nvoid CCVertInput(out StandardVertInput In) {\n  CCAttribute(In);\n  #if CC_USE_SKINNING\n    mat4 m = skinMatrix();\n    In.position = m * In.position;\n    #if CC_USE_ATTRIBUTE_NORMAL\n      In.normal = (m * vec4(In.normal, 0)).xyz;\n    #endif\n    #if CC_USE_ATTRIBUTE_TANGENT\n      In.tangent = m * In.tangent;\n    #endif\n  #endif\n}\n#if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 0\n  uniform CC_SHADOW {\n    mat4 cc_shadow_lightViewProjMatrix[2];\n    vec4 cc_shadow_info[2];\n  };\n  #if CC_NUM_SHADOW_LIGHTS > 0\n    uniform sampler2D cc_shadow_map_0;\n  #endif\n  #if CC_NUM_SHADOW_LIGHTS > 1\n    uniform sampler2D cc_shadow_map_1;\n  #endif\n  varying vec4 v_posLightSpace[2];\n  varying float v_depth[2];\n#endif\nvoid CCShadowInput (vec3 worldPos) {\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 0\n  for (int i = 0; i < CC_NUM_SHADOW_LIGHTS; i++) {\n    v_posLightSpace[i] = cc_shadow_lightViewProjMatrix[i] * vec4(worldPos, 1.0);\n    v_depth[i] = (v_posLightSpace[i].z + cc_shadow_info[i].x) / (cc_shadow_info[i].x + cc_shadow_info[i].y);\n  }\n  #endif\n}\nuniform MAIN_TILING {\n  vec2 mainTiling;\n  vec2 mainOffset;\n};\n#if CC_USE_ATTRIBUTE_UV0 && (USE_DIFFUSE_TEXTURE || USE_EMISSIVE_TEXTURE || USE_SPECULAR_TEXTURE || USE_NORMAL_TEXTURE)\n  out mediump vec2 v_uv0;\n#endif\n#if CC_USE_ATTRIBUTE_COLOR\n  out lowp vec4 v_color;\n#endif\n#if USE_NORMAL_TEXTURE\n  out vec3 v_tangent;\n  out vec3 v_bitangent;\n#endif\nout vec3 v_worldNormal;\nout vec3 v_worldPos;\nout vec3 v_viewDirection;\nvoid main () {\n  StandardVertInput In;\n  CCVertInput(In);\n  vec4 position = In.position;\n  v_worldNormal = normalize((cc_matWorldIT * vec4(In.normal, 0)).xyz);\n  v_worldPos = (cc_matWorld * position).xyz;\n  v_viewDirection = normalize(cc_cameraPos.xyz - v_worldPos);\n  #if CC_USE_ATTRIBUTE_UV0 && (USE_DIFFUSE_TEXTURE || USE_EMISSIVE_TEXTURE || USE_SPECULAR_TEXTURE || USE_NORMAL_TEXTURE)\n    v_uv0 = In.uv * mainTiling + mainOffset;\n  #endif\n  #if CC_USE_ATTRIBUTE_COLOR\n    v_color = In.color;\n  #endif\n  #if USE_NORMAL_TEXTURE\n    v_tangent = normalize((cc_matWorld * vec4(In.tangent.xyz, 0.0)).xyz);\n    v_bitangent = cross(v_worldNormal, v_tangent) * In.tangent.w;\n  #endif\n  CCShadowInput(v_worldPos);\n  gl_Position = cc_matViewProj * cc_matWorld * position;\n}",
+        "frag": "\nprecision highp float;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\n#if USE_ALPHA_TEST\n  uniform ALPHA_TEST {\n    float alphaThreshold;\n  };\n#endif\nvoid ALPHA_TEST (in vec4 color) {\n  #if USE_ALPHA_TEST\n      if (color.a < alphaThreshold) discard;\n  #endif\n}\nvoid ALPHA_TEST (in float alpha) {\n  #if USE_ALPHA_TEST\n      if (alpha < alphaThreshold) discard;\n  #endif\n}\nuniform PhongFrag {\n  lowp vec4 diffuseColor;\n  lowp vec4 specularColor;\n  lowp vec4 emissiveColor;\n  float glossiness;\n};\n#if USE_DIFFUSE_TEXTURE\n  uniform sampler2D diffuseTexture;\n#endif\n#if USE_SPECULAR && USE_SPECULAR_TEXTURE\n  uniform sampler2D specularTexture;\n#endif\n#if USE_EMISSIVE && USE_EMISSIVE_TEXTURE\n  uniform sampler2D emissiveTexture;\n#endif\n#if USE_NORMAL_TEXTURE\n  in vec3 v_tangent;\n  in vec3 v_bitangent;\n  uniform sampler2D normalTexture;\n#endif\nin vec3 v_worldNormal;\nin vec3 v_worldPos;\nin vec3 v_viewDirection;\n#if CC_USE_ATTRIBUTE_UV0 && (USE_DIFFUSE_TEXTURE || (USE_EMISSIVE && USE_EMISSIVE_TEXTURE) || (USE_SPECULAR && USE_SPECULAR_TEXTURE) || USE_NORMAL_TEXTURE)\n  in mediump vec2 v_uv0;\n#endif\n#if CC_USE_ATTRIBUTE_COLOR\n  in lowp vec4 v_color;\n#endif\n#if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 0\n  uniform CC_SHADOW {\n    mat4 cc_shadow_lightViewProjMatrix[2];\n    vec4 cc_shadow_info[2];\n  };\n  #if CC_NUM_SHADOW_LIGHTS > 0\n    uniform sampler2D cc_shadow_map_0;\n  #endif\n  #if CC_NUM_SHADOW_LIGHTS > 1\n    uniform sampler2D cc_shadow_map_1;\n  #endif\n  varying vec4 v_posLightSpace[2];\n  varying float v_depth[2];\n#endif\nfloat unpackRGBAToDepth(vec4 color) {\n  return dot(color, vec4(1.0, 1.0 / 255.0, 1.0 / 65025.0, 1.0 / 160581375.0));\n}\nfloat getDepth(sampler2D shadowMap, vec2 shadowUV) {\n    return unpackRGBAToDepth(texture(shadowMap, shadowUV));\n}\nfloat computeFallOff(float shadow, vec2 coords, float frustumEdgeFalloff) {\n  return shadow;\n}\nfloat shadowSimple(sampler2D shadowMap, vec2 shadowUV, float currentDepth, float darkness) {\n  float closestDepth = getDepth(shadowMap, shadowUV);\n  return currentDepth > closestDepth  ? 1.0 - darkness : 1.0;\n}\nfloat shadowPCF3X3(sampler2D shadowMap, vec2 shadowUV, float currentDepth, float darkness, float shadowSize) {\n  float shadow = 0.0;\n  for (int x = -1; x <= 1; ++x) {\n    for (int y = -1; y <= 1; ++y) {\n      float closestDepth = getDepth(shadowMap, shadowUV + vec2(x, y) * 1.0/shadowSize);\n      shadow += currentDepth > closestDepth  ? 1.0 - darkness : 1.0;\n    }\n  }\n  shadow /= 9.0;\n  return shadow;\n}\nfloat shadowPCF5X5(sampler2D shadowMap, vec2 shadowUV, float currentDepth, float darkness, float shadowSize) {\n  float shadow = 0.0;\n  for (int x = -2; x <= 2; ++x) {\n    for (int y = -2; y <= 2; ++y) {\n      float closestDepth = getDepth(shadowMap, shadowUV + vec2(x, y) * 1.0/shadowSize);\n      shadow += currentDepth > closestDepth  ? 1.0 - darkness : 1.0;\n    }\n  }\n  shadow /= 25.0;\n  return shadow;\n}\n#if CC_NUM_LIGHTS > 0\nuniform CCLIGHTS {\n  vec4 cc_lightPositionAndRange[4];\n  vec4 cc_lightDirection[4];\n  vec4 cc_lightColor[4];\n};\n#endif\nstruct LightInfo {\n  vec3 lightDir;\n  vec3 radiance;\n  vec4 lightColor;\n};\nLightInfo computeDirectionalLighting(\n  vec4 lightDirection,\n  vec4 lightColor\n) {\n  LightInfo ret;\n  ret.lightDir = -normalize(lightDirection.xyz);\n  ret.radiance = lightColor.rgb;\n  ret.lightColor = lightColor;\n  return ret;\n}\nLightInfo computePointLighting(\n  vec3 worldPosition,\n  vec4 lightPositionAndRange,\n  vec4 lightColor\n) {\n  LightInfo ret;\n  vec3 lightDir = lightPositionAndRange.xyz - worldPosition;\n  float attenuation = max(0., 1.0 - length(lightDir) / lightPositionAndRange.w);\n  ret.lightDir = normalize(lightDir);\n  ret.radiance = lightColor.rgb * attenuation;\n  ret.lightColor = lightColor;\n  return ret;\n}\nLightInfo computeSpotLighting(\n  vec3 worldPosition,\n  vec4 lightPositionAndRange,\n  vec4 lightDirection,\n  vec4 lightColor\n) {\n  LightInfo ret;\n  vec3 lightDir = lightPositionAndRange.xyz - worldPosition;\n  float attenuation = max(0., 1.0 - length(lightDir) / lightPositionAndRange.w);\n  lightDir = normalize(lightDir);\n  float cosConeAngle = max(0., dot(lightDirection.xyz, -lightDir));\n  cosConeAngle = cosConeAngle < lightDirection.w ? 0. : cosConeAngle;\n  cosConeAngle = pow(cosConeAngle, lightColor.w);\n  ret.lightDir = lightDir;\n  ret.radiance = lightColor.rgb * attenuation * cosConeAngle;\n  ret.lightColor = lightColor;\n  return ret;\n}\nstruct Lighting {\n  vec3 diffuse;\n  vec3 specular;\n};\nstruct PhongSurface {\n  vec3 diffuse;\n  vec3 emissive;\n  vec3 specular;\n  float opacity;\n  float glossiness;\n  vec3 position;\n  vec3 normal;\n  vec3 viewDirection;\n};\nLighting brdf (PhongSurface s, LightInfo info) {\n  Lighting result;\n  float ndh = 0.0;\n  vec3 halfDir = normalize(s.viewDirection + info.lightDir);\n  float NdotH = max(0.0, dot(s.normal, halfDir));\n  NdotH = pow(NdotH, max(1.0, s.glossiness * 128.0));\n  result.diffuse = info.radiance * max(0.0, dot(s.normal, info.lightDir));\n  result.specular = info.radiance * NdotH;\n  return result;\n}\nvec4 composePhongShading (Lighting lighting, PhongSurface s) {\n  vec4 o = vec4(0.0, 0.0, 0.0, 1.0);\n  o.rgb = lighting.diffuse * s.diffuse;\n  #if USE_EMISSIVE\n    o.rgb += s.emissive;\n  #endif\n  #if USE_SPECULAR\n    o.rgb += lighting.specular * s.specular;\n  #endif\n  o.a = s.opacity;\n  return o;\n}\nvec3 ambient(PhongSurface s, vec4 ambientColor) {\n  return s.diffuse * ambientColor.rgb;\n}\nvec4 CCPhongShading (in PhongSurface s) {\n  Lighting result;\n  result.diffuse = vec3(0, 0, 0);\n  result.specular = vec3(0, 0, 0);\n  #if CC_NUM_LIGHTS > 0\n    #if CC_LIGHT_0_TYPE == 3\n      result.diffuse += ambient(s, cc_lightColor[0]);\n    #else\n      LightInfo info0;\n      #if CC_LIGHT_0_TYPE == 0\n        info0 = computeDirectionalLighting(cc_lightDirection[0], cc_lightColor[0]);\n      #elif CC_LIGHT_0_TYPE == 1\n        info0 = computePointLighting(s.position, cc_lightPositionAndRange[0], cc_lightColor[0]);\n      #elif CC_LIGHT_0_TYPE == 2\n        info0 = computeSpotLighting(s.position, cc_lightPositionAndRange[0], cc_lightDirection[0], cc_lightColor[0]);\n      #endif\n      Lighting result0 = brdf(s, info0);\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 0\n    float shadow_0 = 1.0;\n    vec2 projCoords0 = v_posLightSpace[0].xy / v_posLightSpace[0].w;\n    vec2 shadowUV0 = projCoords0 * 0.5 + vec2(0.5);\n    if (shadowUV0.x >= 0.0 && shadowUV0.x <= 1.0 && shadowUV0.y >= 0.0 && shadowUV0.y <= 1.0) {\n      float currentDepth0 = clamp(v_depth[0], 0.0, 1.0);\n      #if CC_SHADOW_0_TYPE == 3\n        shadow_0 = shadowPCF3X3(cc_shadow_map_0, shadowUV0, currentDepth0, cc_shadow_info[0].w, cc_shadow_info[0].z);\n      #elif CC_SHADOW_0_TYPE == 4\n        shadow_0 = shadowPCF5X5(cc_shadow_map_0, shadowUV0, currentDepth0, cc_shadow_info[0].w, cc_shadow_info[0].z);\n      #else\n        shadow_0 = shadowSimple(cc_shadow_map_0, shadowUV0, currentDepth0, cc_shadow_info[0].w);\n      #endif\n      shadow_0 = computeFallOff(shadow_0, projCoords0, 0.0);\n    }\n    result0.diffuse *= shadow_0;\n    result0.specular *= shadow_0;\n  #endif\n      result.diffuse += result0.diffuse;\n      result.specular += result0.specular;\n    #endif\n  #endif\n  #if CC_NUM_LIGHTS > 1\n    #if CC_LIGHT_1_TYPE == 3\n      result.diffuse += ambient(s, cc_lightColor[1]);\n    #else\n      LightInfo info1;\n      #if CC_LIGHT_1_TYPE == 0\n        info1 = computeDirectionalLighting(cc_lightDirection[1], cc_lightColor[1]);\n      #elif CC_LIGHT_1_TYPE == 1\n        info1 = computePointLighting(s.position, cc_lightPositionAndRange[1], cc_lightColor[1]);\n      #elif CC_LIGHT_1_TYPE == 2\n        info1 = computeSpotLighting(s.position, cc_lightPositionAndRange[1], cc_lightDirection[1], cc_lightColor[1]);\n      #endif\n      Lighting result1 = brdf(s, info1);\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 1\n    float shadow_1 = 1.0;\n    vec2 projCoords1 = v_posLightSpace[1].xy / v_posLightSpace[1].w;\n    vec2 shadowUV1 = projCoords1 * 0.5 + vec2(0.5);\n    if (shadowUV1.x >= 0.0 && shadowUV1.x <= 1.0 && shadowUV1.y >= 0.0 && shadowUV1.y <= 1.0) {\n      float currentDepth1 = clamp(v_depth[1], 0.0, 1.0);\n      #if CC_SHADOW_1_TYPE == 3\n        shadow_1 = shadowPCF3X3(cc_shadow_map_1, shadowUV1, currentDepth1, cc_shadow_info[1].w, cc_shadow_info[1].z);\n      #elif CC_SHADOW_1_TYPE == 4\n        shadow_1 = shadowPCF5X5(cc_shadow_map_1, shadowUV1, currentDepth1, cc_shadow_info[1].w, cc_shadow_info[1].z);\n      #else\n        shadow_1 = shadowSimple(cc_shadow_map_1, shadowUV1, currentDepth1, cc_shadow_info[1].w);\n      #endif\n      shadow_1 = computeFallOff(shadow_1, projCoords1, 0.0);\n    }\n    result1.diffuse *= shadow_1;\n    result1.specular *= shadow_1;\n  #endif\n      result.diffuse += result1.diffuse;\n      result.specular += result1.specular;\n    #endif\n  #endif\n  #if CC_NUM_LIGHTS > 2\n    #if CC_LIGHT_2_TYPE == 3\n      result.diffuse += ambient(s, cc_lightColor[2]);\n    #else\n      LightInfo info2;\n      #if CC_LIGHT_2_TYPE == 0\n        info2 = computeDirectionalLighting(cc_lightDirection[2], cc_lightColor[2]);\n      #elif CC_LIGHT_2_TYPE == 1\n        info2 = computePointLighting(s.position, cc_lightPositionAndRange[2], cc_lightColor[2]);\n      #elif CC_LIGHT_2_TYPE == 2\n        info2 = computeSpotLighting(s.position, cc_lightPositionAndRange[2], cc_lightDirection[2], cc_lightColor[2]);\n      #endif\n      Lighting result2 = brdf(s, info2);\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 2\n    float shadow_2 = 1.0;\n    vec2 projCoords2 = v_posLightSpace[2].xy / v_posLightSpace[2].w;\n    vec2 shadowUV2 = projCoords2 * 0.5 + vec2(0.5);\n    if (shadowUV2.x >= 0.0 && shadowUV2.x <= 1.0 && shadowUV2.y >= 0.0 && shadowUV2.y <= 1.0) {\n      float currentDepth2 = clamp(v_depth[2], 0.0, 1.0);\n      #if CC_SHADOW_2_TYPE == 3\n        shadow_2 = shadowPCF3X3(cc_shadow_map_2, shadowUV2, currentDepth2, cc_shadow_info[2].w, cc_shadow_info[2].z);\n      #elif CC_SHADOW_2_TYPE == 4\n        shadow_2 = shadowPCF5X5(cc_shadow_map_2, shadowUV2, currentDepth2, cc_shadow_info[2].w, cc_shadow_info[2].z);\n      #else\n        shadow_2 = shadowSimple(cc_shadow_map_2, shadowUV2, currentDepth2, cc_shadow_info[2].w);\n      #endif\n      shadow_2 = computeFallOff(shadow_2, projCoords2, 0.0);\n    }\n    result2.diffuse *= shadow_2;\n    result2.specular *= shadow_2;\n  #endif\n      result.diffuse += result2.diffuse;\n      result.specular += result2.specular;\n    #endif\n  #endif\n  #if CC_NUM_LIGHTS > 3\n    #if CC_LIGHT_3_TYPE == 3\n      result.diffuse += ambient(s, cc_lightColor[3]);\n    #else\n      LightInfo info3;\n      #if CC_LIGHT_3_TYPE == 0\n        info3 = computeDirectionalLighting(cc_lightDirection[3], cc_lightColor[3]);\n      #elif CC_LIGHT_3_TYPE == 1\n        info3 = computePointLighting(s.position, cc_lightPositionAndRange[3], cc_lightColor[3]);\n      #elif CC_LIGHT_3_TYPE == 2\n        info3 = computeSpotLighting(s.position, cc_lightPositionAndRange[3], cc_lightDirection[3], cc_lightColor[3]);\n      #endif\n      Lighting result3 = brdf(s, info3);\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 3\n    float shadow_3 = 1.0;\n    vec2 projCoords3 = v_posLightSpace[3].xy / v_posLightSpace[3].w;\n    vec2 shadowUV3 = projCoords3 * 0.5 + vec2(0.5);\n    if (shadowUV3.x >= 0.0 && shadowUV3.x <= 1.0 && shadowUV3.y >= 0.0 && shadowUV3.y <= 1.0) {\n      float currentDepth3 = clamp(v_depth[3], 0.0, 1.0);\n      #if CC_SHADOW_3_TYPE == 3\n        shadow_3 = shadowPCF3X3(cc_shadow_map_3, shadowUV3, currentDepth3, cc_shadow_info[3].w, cc_shadow_info[3].z);\n      #elif CC_SHADOW_3_TYPE == 4\n        shadow_3 = shadowPCF5X5(cc_shadow_map_3, shadowUV3, currentDepth3, cc_shadow_info[3].w, cc_shadow_info[3].z);\n      #else\n        shadow_3 = shadowSimple(cc_shadow_map_3, shadowUV3, currentDepth3, cc_shadow_info[3].w);\n      #endif\n      shadow_3 = computeFallOff(shadow_3, projCoords3, 0.0);\n    }\n    result3.diffuse *= shadow_3;\n    result3.specular *= shadow_3;\n  #endif\n      result.diffuse += result3.diffuse;\n      result.specular += result3.specular;\n    #endif\n  #endif\n  return composePhongShading(result, s);\n}\nvoid surf (out PhongSurface s) {\n  vec4 diffuse = vec4(1, 1, 1, 1);\n  #if CC_USE_ATTRIBUTE_COLOR\n    diffuse *= v_color;\n  #endif\n  diffuse *= diffuseColor;\n  #if USE_DIFFUSE_TEXTURE\n  vec4 diffuseTexture_tmp = texture(diffuseTexture, v_uv0);\n  #if CC_USE_ALPHA_ATLAS_diffuseTexture\n      diffuseTexture_tmp.a *= texture(diffuseTexture, v_uv0 + vec2(0, 0.5)).r;\n  #endif\n  #if INPUT_IS_GAMMA\n    diffuse.rgb *= (diffuseTexture_tmp.rgb * diffuseTexture_tmp.rgb);\n    diffuse.a *= diffuseTexture_tmp.a;\n  #else\n    diffuse *= diffuseTexture_tmp;\n  #endif\n  #endif\n  ALPHA_TEST(diffuse);\n  s.diffuse = diffuse.rgb;\n  s.opacity = diffuse.a;\n  #if USE_EMISSIVE\n    s.emissive = emissiveColor.rgb;\n    #if USE_EMISSIVE_TEXTURE\n  vec4 emissiveTexture_tmp = texture(emissiveTexture, v_uv0);\n  #if CC_USE_ALPHA_ATLAS_emissiveTexture\n      emissiveTexture_tmp.a *= texture(emissiveTexture, v_uv0 + vec2(0, 0.5)).r;\n  #endif\n  #if INPUT_IS_GAMMA\n    s.emissive.rgb *= (emissiveTexture_tmp.rgb * emissiveTexture_tmp.rgb);\n  #else\n    s.emissive.rgb *= emissiveTexture_tmp.rgb;\n  #endif\n    #endif\n  #endif\n  #if USE_SPECULAR\n    s.specular = specularColor.rgb;\n    #if USE_SPECULAR_TEXTURE\n  vec4 specularTexture_tmp = texture(specularTexture, v_uv0);\n  #if CC_USE_ALPHA_ATLAS_specularTexture\n      specularTexture_tmp.a *= texture(specularTexture, v_uv0 + vec2(0, 0.5)).r;\n  #endif\n  #if INPUT_IS_GAMMA\n    s.specular.rgb *= (specularTexture_tmp.rgb * specularTexture_tmp.rgb);\n  #else\n    s.specular.rgb *= specularTexture_tmp.rgb;\n  #endif\n    #endif\n  #endif\n  s.normal = v_worldNormal;\n  #if USE_NORMAL_TEXTURE\n    vec3 nmmp = texture(normalTexture, v_uv0).xyz - vec3(0.5);\n    s.normal =\n      nmmp.x * normalize(v_tangent) +\n      nmmp.y * normalize(v_bitangent) +\n      nmmp.z * normalize(s.normal);\n    s.normal = normalize(s.normal);\n  #endif\n  s.position = v_worldPos;\n  s.viewDirection = v_viewDirection;\n  s.glossiness = glossiness;\n}\nvoid main () {\n  PhongSurface s;\n  surf(s);\n  vec4 color = CCPhongShading(s);\n  gl_FragColor = CCFragOutput(color);\n}"
+      },
+      "glsl1": {
+        "vert": "\nprecision highp float;\nuniform mat4 cc_matWorld;\nuniform mat4 cc_matWorldIT;\nuniform mat4 cc_matViewProj;\nuniform vec4 cc_cameraPos;\n#if CC_USE_SKINNING\n  attribute vec4 a_weights;\n  attribute vec4 a_joints;\n  #if CC_USE_JOINTS_TEXTRUE\n    uniform vec2 jointsTextureSize;\n    uniform sampler2D jointsTexture;\n    #if CC_JOINTS_TEXTURE_FLOAT32\n      mat4 getBoneMatrix(const in float i) {\n        float width = jointsTextureSize.x;\n        float height = jointsTextureSize.y;\n        float j = i * 4.0;\n        float x = mod(j, width);\n        float y = floor(j / width);\n        float dx = 1.0 / width;\n        float dy = 1.0 / height;\n        y = dy * (y + 0.5);\n        vec4 v1 = texture2D(jointsTexture, vec2(dx * (x + 0.5), y));\n        vec4 v2 = texture2D(jointsTexture, vec2(dx * (x + 1.5), y));\n        vec4 v3 = texture2D(jointsTexture, vec2(dx * (x + 2.5), y));\n        vec4 v4 = texture2D(jointsTexture, vec2(dx * (x + 3.5), y));\n        return mat4(v1, v2, v3, v4);\n      }\n    #else\n      float decode32(vec4 rgba) {\n        float Sign = 1.0 - step(128.0, rgba[0]) * 2.0;\n        float Exponent = 2.0 * mod(rgba[0], 128.0) + step(128.0, rgba[1]) - 127.0;\n        float Mantissa = mod(rgba[1], 128.0) * 65536.0 + rgba[2] * 256.0 + rgba[3] + 8388608.0;\n        return Sign * exp2(Exponent - 23.0) * Mantissa;\n      }\n      vec4 decodevec4 (vec4 x, vec4 y, vec4 z, vec4 w) {\n        return vec4(\n          decode32(x.wzyx * 255.0),\n          decode32(y.wzyx * 255.0),\n          decode32(z.wzyx * 255.0),\n          decode32(w.wzyx * 255.0)\n        );\n      }\n      vec4 decodevec4 (float dx, float x, float y) {\n        return decodevec4(\n          texture2D(jointsTexture, vec2(dx * (x + 0.5), y)),\n          texture2D(jointsTexture, vec2(dx * (x + 1.5), y)),\n          texture2D(jointsTexture, vec2(dx * (x + 2.5), y)),\n          texture2D(jointsTexture, vec2(dx * (x + 3.5), y))\n        );\n      }\n      mat4 getBoneMatrix(const in float i) {\n        float width = jointsTextureSize.x;\n        float height = jointsTextureSize.y;\n        float j = i * 16.0;\n        float x = mod(j, width);\n        float y = floor(j / width);\n        float dx = 1.0 / width;\n        float dy = 1.0 / height;\n        y = dy * (y + 0.5);\n        vec4 v1 = decodevec4(dx, x,       y);\n        vec4 v2 = decodevec4(dx, x+4.0,   y);\n        vec4 v3 = decodevec4(dx, x+8.0,   y);\n        vec4 v4 = decodevec4(dx, x+12.0,  y);\n        return mat4(v1, v2, v3, v4);\n      }\n    #endif\n  #else\n    uniform mat4 jointMatrices[50];\n    mat4 getBoneMatrix(const in float i) {\n      return jointMatrices[int(i)];\n    }\n  #endif\n    mat4 skinMatrix() {\n      return\n        getBoneMatrix(a_joints.x) * a_weights.x +\n        getBoneMatrix(a_joints.y) * a_weights.y +\n        getBoneMatrix(a_joints.z) * a_weights.z +\n        getBoneMatrix(a_joints.w) * a_weights.w\n        ;\n    }\n#endif\nstruct StandardVertInput {\n  vec2 uv;\n  vec4 position;\n  vec3 normal;\n  vec4 tangent;\n  vec4 color;\n};\nattribute vec3 a_position;\n#if CC_USE_ATTRIBUTE_UV0\nattribute vec2 a_uv0;\n#endif\n#if CC_USE_ATTRIBUTE_COLOR\nattribute vec4 a_color;\n#endif\n#if CC_USE_ATTRIBUTE_NORMAL\nattribute vec3 a_normal;\n#endif\n#if CC_USE_ATTRIBUTE_TANGENT\nattribute vec4 a_tangent;\n#endif\nvoid CCAttribute (out StandardVertInput In) {\n  In.position = vec4(a_position, 1.0);\n  #if CC_USE_ATTRIBUTE_UV0\n    In.uv = a_uv0;\n  #else\n    In.uv = vec2(0.0);\n  #endif\n  #if CC_USE_ATTRIBUTE_COLOR\n    In.color = a_color;\n  #else\n    In.color = vec4(1.0);\n  #endif\n  #if CC_USE_ATTRIBUTE_NORMAL\n    In.normal = a_normal;\n  #else\n    In.normal = vec3(0.0, 1.0, 0.0);\n  #endif\n  #if CC_USE_ATTRIBUTE_TANGENT\n    In.tangent = a_tangent;\n  #else\n    In.tangent = vec4(1.0, 0.0, 0.0, 0.0);\n  #endif\n}\nvoid CCVertInput(out StandardVertInput In) {\n  CCAttribute(In);\n  #if CC_USE_SKINNING\n    mat4 m = skinMatrix();\n    In.position = m * In.position;\n    #if CC_USE_ATTRIBUTE_NORMAL\n      In.normal = (m * vec4(In.normal, 0)).xyz;\n    #endif\n    #if CC_USE_ATTRIBUTE_TANGENT\n      In.tangent = m * In.tangent;\n    #endif\n  #endif\n}\n#if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 0\n  uniform mat4 cc_shadow_lightViewProjMatrix[2];\nuniform vec4 cc_shadow_info[2];\n  #if CC_NUM_SHADOW_LIGHTS > 0\n    uniform sampler2D cc_shadow_map_0;\n  #endif\n  #if CC_NUM_SHADOW_LIGHTS > 1\n    uniform sampler2D cc_shadow_map_1;\n  #endif\n  varying vec4 v_posLightSpace[2];\n  varying float v_depth[2];\n#endif\nvoid CCShadowInput (vec3 worldPos) {\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 0\n  for (int i = 0; i < CC_NUM_SHADOW_LIGHTS; i++) {\n    v_posLightSpace[i] = cc_shadow_lightViewProjMatrix[i] * vec4(worldPos, 1.0);\n    v_depth[i] = (v_posLightSpace[i].z + cc_shadow_info[i].x) / (cc_shadow_info[i].x + cc_shadow_info[i].y);\n  }\n  #endif\n}\nuniform vec2 mainTiling;\nuniform vec2 mainOffset;\n#if CC_USE_ATTRIBUTE_UV0 && (USE_DIFFUSE_TEXTURE || USE_EMISSIVE_TEXTURE || USE_SPECULAR_TEXTURE || USE_NORMAL_TEXTURE)\n  varying mediump vec2 v_uv0;\n#endif\n#if CC_USE_ATTRIBUTE_COLOR\n  varying lowp vec4 v_color;\n#endif\n#if USE_NORMAL_TEXTURE\n  varying vec3 v_tangent;\n  varying vec3 v_bitangent;\n#endif\nvarying vec3 v_worldNormal;\nvarying vec3 v_worldPos;\nvarying vec3 v_viewDirection;\nvoid main () {\n  StandardVertInput In;\n  CCVertInput(In);\n  vec4 position = In.position;\n  v_worldNormal = normalize((cc_matWorldIT * vec4(In.normal, 0)).xyz);\n  v_worldPos = (cc_matWorld * position).xyz;\n  v_viewDirection = normalize(cc_cameraPos.xyz - v_worldPos);\n  #if CC_USE_ATTRIBUTE_UV0 && (USE_DIFFUSE_TEXTURE || USE_EMISSIVE_TEXTURE || USE_SPECULAR_TEXTURE || USE_NORMAL_TEXTURE)\n    v_uv0 = In.uv * mainTiling + mainOffset;\n  #endif\n  #if CC_USE_ATTRIBUTE_COLOR\n    v_color = In.color;\n  #endif\n  #if USE_NORMAL_TEXTURE\n    v_tangent = normalize((cc_matWorld * vec4(In.tangent.xyz, 0.0)).xyz);\n    v_bitangent = cross(v_worldNormal, v_tangent) * In.tangent.w;\n  #endif\n  CCShadowInput(v_worldPos);\n  gl_Position = cc_matViewProj * cc_matWorld * position;\n}",
+        "frag": "\nprecision highp float;\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\n#if USE_ALPHA_TEST\n  uniform float alphaThreshold;\n#endif\nvoid ALPHA_TEST (in vec4 color) {\n  #if USE_ALPHA_TEST\n      if (color.a < alphaThreshold) discard;\n  #endif\n}\nvoid ALPHA_TEST (in float alpha) {\n  #if USE_ALPHA_TEST\n      if (alpha < alphaThreshold) discard;\n  #endif\n}\nuniform lowp vec4 diffuseColor;\nuniform lowp vec4 specularColor;\nuniform lowp vec4 emissiveColor;\nuniform float glossiness;\n#if USE_DIFFUSE_TEXTURE\n  uniform sampler2D diffuseTexture;\n#endif\n#if USE_SPECULAR && USE_SPECULAR_TEXTURE\n  uniform sampler2D specularTexture;\n#endif\n#if USE_EMISSIVE && USE_EMISSIVE_TEXTURE\n  uniform sampler2D emissiveTexture;\n#endif\n#if USE_NORMAL_TEXTURE\n  varying vec3 v_tangent;\n  varying vec3 v_bitangent;\n  uniform sampler2D normalTexture;\n#endif\nvarying vec3 v_worldNormal;\nvarying vec3 v_worldPos;\nvarying vec3 v_viewDirection;\n#if CC_USE_ATTRIBUTE_UV0 && (USE_DIFFUSE_TEXTURE || (USE_EMISSIVE && USE_EMISSIVE_TEXTURE) || (USE_SPECULAR && USE_SPECULAR_TEXTURE) || USE_NORMAL_TEXTURE)\n  varying mediump vec2 v_uv0;\n#endif\n#if CC_USE_ATTRIBUTE_COLOR\n  varying lowp vec4 v_color;\n#endif\n#if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 0\n  uniform vec4 cc_shadow_info[2];\n  #if CC_NUM_SHADOW_LIGHTS > 0\n    uniform sampler2D cc_shadow_map_0;\n  #endif\n  #if CC_NUM_SHADOW_LIGHTS > 1\n    uniform sampler2D cc_shadow_map_1;\n  #endif\n  varying vec4 v_posLightSpace[2];\n  varying float v_depth[2];\n#endif\nfloat unpackRGBAToDepth(vec4 color) {\n  return dot(color, vec4(1.0, 1.0 / 255.0, 1.0 / 65025.0, 1.0 / 160581375.0));\n}\nfloat getDepth(sampler2D shadowMap, vec2 shadowUV) {\n    return unpackRGBAToDepth(texture2D(shadowMap, shadowUV));\n}\nfloat computeFallOff(float shadow, vec2 coords, float frustumEdgeFalloff) {\n  return shadow;\n}\nfloat shadowSimple(sampler2D shadowMap, vec2 shadowUV, float currentDepth, float darkness) {\n  float closestDepth = getDepth(shadowMap, shadowUV);\n  return currentDepth > closestDepth  ? 1.0 - darkness : 1.0;\n}\nfloat shadowPCF3X3(sampler2D shadowMap, vec2 shadowUV, float currentDepth, float darkness, float shadowSize) {\n  float shadow = 0.0;\n  for (int x = -1; x <= 1; ++x) {\n    for (int y = -1; y <= 1; ++y) {\n      float closestDepth = getDepth(shadowMap, shadowUV + vec2(x, y) * 1.0/shadowSize);\n      shadow += currentDepth > closestDepth  ? 1.0 - darkness : 1.0;\n    }\n  }\n  shadow /= 9.0;\n  return shadow;\n}\nfloat shadowPCF5X5(sampler2D shadowMap, vec2 shadowUV, float currentDepth, float darkness, float shadowSize) {\n  float shadow = 0.0;\n  for (int x = -2; x <= 2; ++x) {\n    for (int y = -2; y <= 2; ++y) {\n      float closestDepth = getDepth(shadowMap, shadowUV + vec2(x, y) * 1.0/shadowSize);\n      shadow += currentDepth > closestDepth  ? 1.0 - darkness : 1.0;\n    }\n  }\n  shadow /= 25.0;\n  return shadow;\n}\n#if CC_NUM_LIGHTS > 0\nuniform vec4 cc_lightPositionAndRange[4];\nuniform vec4 cc_lightDirection[4];\nuniform vec4 cc_lightColor[4];\n#endif\nstruct LightInfo {\n  vec3 lightDir;\n  vec3 radiance;\n  vec4 lightColor;\n};\nLightInfo computeDirectionalLighting(\n  vec4 lightDirection,\n  vec4 lightColor\n) {\n  LightInfo ret;\n  ret.lightDir = -normalize(lightDirection.xyz);\n  ret.radiance = lightColor.rgb;\n  ret.lightColor = lightColor;\n  return ret;\n}\nLightInfo computePointLighting(\n  vec3 worldPosition,\n  vec4 lightPositionAndRange,\n  vec4 lightColor\n) {\n  LightInfo ret;\n  vec3 lightDir = lightPositionAndRange.xyz - worldPosition;\n  float attenuation = max(0., 1.0 - length(lightDir) / lightPositionAndRange.w);\n  ret.lightDir = normalize(lightDir);\n  ret.radiance = lightColor.rgb * attenuation;\n  ret.lightColor = lightColor;\n  return ret;\n}\nLightInfo computeSpotLighting(\n  vec3 worldPosition,\n  vec4 lightPositionAndRange,\n  vec4 lightDirection,\n  vec4 lightColor\n) {\n  LightInfo ret;\n  vec3 lightDir = lightPositionAndRange.xyz - worldPosition;\n  float attenuation = max(0., 1.0 - length(lightDir) / lightPositionAndRange.w);\n  lightDir = normalize(lightDir);\n  float cosConeAngle = max(0., dot(lightDirection.xyz, -lightDir));\n  cosConeAngle = cosConeAngle < lightDirection.w ? 0. : cosConeAngle;\n  cosConeAngle = pow(cosConeAngle, lightColor.w);\n  ret.lightDir = lightDir;\n  ret.radiance = lightColor.rgb * attenuation * cosConeAngle;\n  ret.lightColor = lightColor;\n  return ret;\n}\nstruct Lighting {\n  vec3 diffuse;\n  vec3 specular;\n};\nstruct PhongSurface {\n  vec3 diffuse;\n  vec3 emissive;\n  vec3 specular;\n  float opacity;\n  float glossiness;\n  vec3 position;\n  vec3 normal;\n  vec3 viewDirection;\n};\nLighting brdf (PhongSurface s, LightInfo info) {\n  Lighting result;\n  float ndh = 0.0;\n  vec3 halfDir = normalize(s.viewDirection + info.lightDir);\n  float NdotH = max(0.0, dot(s.normal, halfDir));\n  NdotH = pow(NdotH, max(1.0, s.glossiness * 128.0));\n  result.diffuse = info.radiance * max(0.0, dot(s.normal, info.lightDir));\n  result.specular = info.radiance * NdotH;\n  return result;\n}\nvec4 composePhongShading (Lighting lighting, PhongSurface s) {\n  vec4 o = vec4(0.0, 0.0, 0.0, 1.0);\n  o.rgb = lighting.diffuse * s.diffuse;\n  #if USE_EMISSIVE\n    o.rgb += s.emissive;\n  #endif\n  #if USE_SPECULAR\n    o.rgb += lighting.specular * s.specular;\n  #endif\n  o.a = s.opacity;\n  return o;\n}\nvec3 ambient(PhongSurface s, vec4 ambientColor) {\n  return s.diffuse * ambientColor.rgb;\n}\nvec4 CCPhongShading (in PhongSurface s) {\n  Lighting result;\n  result.diffuse = vec3(0, 0, 0);\n  result.specular = vec3(0, 0, 0);\n  #if CC_NUM_LIGHTS > 0\n    #if CC_LIGHT_0_TYPE == 3\n      result.diffuse += ambient(s, cc_lightColor[0]);\n    #else\n      LightInfo info0;\n      #if CC_LIGHT_0_TYPE == 0\n        info0 = computeDirectionalLighting(cc_lightDirection[0], cc_lightColor[0]);\n      #elif CC_LIGHT_0_TYPE == 1\n        info0 = computePointLighting(s.position, cc_lightPositionAndRange[0], cc_lightColor[0]);\n      #elif CC_LIGHT_0_TYPE == 2\n        info0 = computeSpotLighting(s.position, cc_lightPositionAndRange[0], cc_lightDirection[0], cc_lightColor[0]);\n      #endif\n      Lighting result0 = brdf(s, info0);\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 0\n    float shadow_0 = 1.0;\n    vec2 projCoords0 = v_posLightSpace[0].xy / v_posLightSpace[0].w;\n    vec2 shadowUV0 = projCoords0 * 0.5 + vec2(0.5);\n    if (shadowUV0.x >= 0.0 && shadowUV0.x <= 1.0 && shadowUV0.y >= 0.0 && shadowUV0.y <= 1.0) {\n      float currentDepth0 = clamp(v_depth[0], 0.0, 1.0);\n      #if CC_SHADOW_0_TYPE == 3\n        shadow_0 = shadowPCF3X3(cc_shadow_map_0, shadowUV0, currentDepth0, cc_shadow_info[0].w, cc_shadow_info[0].z);\n      #elif CC_SHADOW_0_TYPE == 4\n        shadow_0 = shadowPCF5X5(cc_shadow_map_0, shadowUV0, currentDepth0, cc_shadow_info[0].w, cc_shadow_info[0].z);\n      #else\n        shadow_0 = shadowSimple(cc_shadow_map_0, shadowUV0, currentDepth0, cc_shadow_info[0].w);\n      #endif\n      shadow_0 = computeFallOff(shadow_0, projCoords0, 0.0);\n    }\n    result0.diffuse *= shadow_0;\n    result0.specular *= shadow_0;\n  #endif\n      result.diffuse += result0.diffuse;\n      result.specular += result0.specular;\n    #endif\n  #endif\n  #if CC_NUM_LIGHTS > 1\n    #if CC_LIGHT_1_TYPE == 3\n      result.diffuse += ambient(s, cc_lightColor[1]);\n    #else\n      LightInfo info1;\n      #if CC_LIGHT_1_TYPE == 0\n        info1 = computeDirectionalLighting(cc_lightDirection[1], cc_lightColor[1]);\n      #elif CC_LIGHT_1_TYPE == 1\n        info1 = computePointLighting(s.position, cc_lightPositionAndRange[1], cc_lightColor[1]);\n      #elif CC_LIGHT_1_TYPE == 2\n        info1 = computeSpotLighting(s.position, cc_lightPositionAndRange[1], cc_lightDirection[1], cc_lightColor[1]);\n      #endif\n      Lighting result1 = brdf(s, info1);\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 1\n    float shadow_1 = 1.0;\n    vec2 projCoords1 = v_posLightSpace[1].xy / v_posLightSpace[1].w;\n    vec2 shadowUV1 = projCoords1 * 0.5 + vec2(0.5);\n    if (shadowUV1.x >= 0.0 && shadowUV1.x <= 1.0 && shadowUV1.y >= 0.0 && shadowUV1.y <= 1.0) {\n      float currentDepth1 = clamp(v_depth[1], 0.0, 1.0);\n      #if CC_SHADOW_1_TYPE == 3\n        shadow_1 = shadowPCF3X3(cc_shadow_map_1, shadowUV1, currentDepth1, cc_shadow_info[1].w, cc_shadow_info[1].z);\n      #elif CC_SHADOW_1_TYPE == 4\n        shadow_1 = shadowPCF5X5(cc_shadow_map_1, shadowUV1, currentDepth1, cc_shadow_info[1].w, cc_shadow_info[1].z);\n      #else\n        shadow_1 = shadowSimple(cc_shadow_map_1, shadowUV1, currentDepth1, cc_shadow_info[1].w);\n      #endif\n      shadow_1 = computeFallOff(shadow_1, projCoords1, 0.0);\n    }\n    result1.diffuse *= shadow_1;\n    result1.specular *= shadow_1;\n  #endif\n      result.diffuse += result1.diffuse;\n      result.specular += result1.specular;\n    #endif\n  #endif\n  #if CC_NUM_LIGHTS > 2\n    #if CC_LIGHT_2_TYPE == 3\n      result.diffuse += ambient(s, cc_lightColor[2]);\n    #else\n      LightInfo info2;\n      #if CC_LIGHT_2_TYPE == 0\n        info2 = computeDirectionalLighting(cc_lightDirection[2], cc_lightColor[2]);\n      #elif CC_LIGHT_2_TYPE == 1\n        info2 = computePointLighting(s.position, cc_lightPositionAndRange[2], cc_lightColor[2]);\n      #elif CC_LIGHT_2_TYPE == 2\n        info2 = computeSpotLighting(s.position, cc_lightPositionAndRange[2], cc_lightDirection[2], cc_lightColor[2]);\n      #endif\n      Lighting result2 = brdf(s, info2);\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 2\n    float shadow_2 = 1.0;\n    vec2 projCoords2 = v_posLightSpace[2].xy / v_posLightSpace[2].w;\n    vec2 shadowUV2 = projCoords2 * 0.5 + vec2(0.5);\n    if (shadowUV2.x >= 0.0 && shadowUV2.x <= 1.0 && shadowUV2.y >= 0.0 && shadowUV2.y <= 1.0) {\n      float currentDepth2 = clamp(v_depth[2], 0.0, 1.0);\n      #if CC_SHADOW_2_TYPE == 3\n        shadow_2 = shadowPCF3X3(cc_shadow_map_2, shadowUV2, currentDepth2, cc_shadow_info[2].w, cc_shadow_info[2].z);\n      #elif CC_SHADOW_2_TYPE == 4\n        shadow_2 = shadowPCF5X5(cc_shadow_map_2, shadowUV2, currentDepth2, cc_shadow_info[2].w, cc_shadow_info[2].z);\n      #else\n        shadow_2 = shadowSimple(cc_shadow_map_2, shadowUV2, currentDepth2, cc_shadow_info[2].w);\n      #endif\n      shadow_2 = computeFallOff(shadow_2, projCoords2, 0.0);\n    }\n    result2.diffuse *= shadow_2;\n    result2.specular *= shadow_2;\n  #endif\n      result.diffuse += result2.diffuse;\n      result.specular += result2.specular;\n    #endif\n  #endif\n  #if CC_NUM_LIGHTS > 3\n    #if CC_LIGHT_3_TYPE == 3\n      result.diffuse += ambient(s, cc_lightColor[3]);\n    #else\n      LightInfo info3;\n      #if CC_LIGHT_3_TYPE == 0\n        info3 = computeDirectionalLighting(cc_lightDirection[3], cc_lightColor[3]);\n      #elif CC_LIGHT_3_TYPE == 1\n        info3 = computePointLighting(s.position, cc_lightPositionAndRange[3], cc_lightColor[3]);\n      #elif CC_LIGHT_3_TYPE == 2\n        info3 = computeSpotLighting(s.position, cc_lightPositionAndRange[3], cc_lightDirection[3], cc_lightColor[3]);\n      #endif\n      Lighting result3 = brdf(s, info3);\n  #if CC_USE_SHADOW_MAP && CC_NUM_SHADOW_LIGHTS > 3\n    float shadow_3 = 1.0;\n    vec2 projCoords3 = v_posLightSpace[3].xy / v_posLightSpace[3].w;\n    vec2 shadowUV3 = projCoords3 * 0.5 + vec2(0.5);\n    if (shadowUV3.x >= 0.0 && shadowUV3.x <= 1.0 && shadowUV3.y >= 0.0 && shadowUV3.y <= 1.0) {\n      float currentDepth3 = clamp(v_depth[3], 0.0, 1.0);\n      #if CC_SHADOW_3_TYPE == 3\n        shadow_3 = shadowPCF3X3(cc_shadow_map_3, shadowUV3, currentDepth3, cc_shadow_info[3].w, cc_shadow_info[3].z);\n      #elif CC_SHADOW_3_TYPE == 4\n        shadow_3 = shadowPCF5X5(cc_shadow_map_3, shadowUV3, currentDepth3, cc_shadow_info[3].w, cc_shadow_info[3].z);\n      #else\n        shadow_3 = shadowSimple(cc_shadow_map_3, shadowUV3, currentDepth3, cc_shadow_info[3].w);\n      #endif\n      shadow_3 = computeFallOff(shadow_3, projCoords3, 0.0);\n    }\n    result3.diffuse *= shadow_3;\n    result3.specular *= shadow_3;\n  #endif\n      result.diffuse += result3.diffuse;\n      result.specular += result3.specular;\n    #endif\n  #endif\n  return composePhongShading(result, s);\n}\nvoid surf (out PhongSurface s) {\n  vec4 diffuse = vec4(1, 1, 1, 1);\n  #if CC_USE_ATTRIBUTE_COLOR\n    diffuse *= v_color;\n  #endif\n  diffuse *= diffuseColor;\n  #if USE_DIFFUSE_TEXTURE\n  vec4 diffuseTexture_tmp = texture2D(diffuseTexture, v_uv0);\n  #if CC_USE_ALPHA_ATLAS_diffuseTexture\n      diffuseTexture_tmp.a *= texture2D(diffuseTexture, v_uv0 + vec2(0, 0.5)).r;\n  #endif\n  #if INPUT_IS_GAMMA\n    diffuse.rgb *= (diffuseTexture_tmp.rgb * diffuseTexture_tmp.rgb);\n    diffuse.a *= diffuseTexture_tmp.a;\n  #else\n    diffuse *= diffuseTexture_tmp;\n  #endif\n  #endif\n  ALPHA_TEST(diffuse);\n  s.diffuse = diffuse.rgb;\n  s.opacity = diffuse.a;\n  #if USE_EMISSIVE\n    s.emissive = emissiveColor.rgb;\n    #if USE_EMISSIVE_TEXTURE\n  vec4 emissiveTexture_tmp = texture2D(emissiveTexture, v_uv0);\n  #if CC_USE_ALPHA_ATLAS_emissiveTexture\n      emissiveTexture_tmp.a *= texture2D(emissiveTexture, v_uv0 + vec2(0, 0.5)).r;\n  #endif\n  #if INPUT_IS_GAMMA\n    s.emissive.rgb *= (emissiveTexture_tmp.rgb * emissiveTexture_tmp.rgb);\n  #else\n    s.emissive.rgb *= emissiveTexture_tmp.rgb;\n  #endif\n    #endif\n  #endif\n  #if USE_SPECULAR\n    s.specular = specularColor.rgb;\n    #if USE_SPECULAR_TEXTURE\n  vec4 specularTexture_tmp = texture2D(specularTexture, v_uv0);\n  #if CC_USE_ALPHA_ATLAS_specularTexture\n      specularTexture_tmp.a *= texture2D(specularTexture, v_uv0 + vec2(0, 0.5)).r;\n  #endif\n  #if INPUT_IS_GAMMA\n    s.specular.rgb *= (specularTexture_tmp.rgb * specularTexture_tmp.rgb);\n  #else\n    s.specular.rgb *= specularTexture_tmp.rgb;\n  #endif\n    #endif\n  #endif\n  s.normal = v_worldNormal;\n  #if USE_NORMAL_TEXTURE\n    vec3 nmmp = texture2D(normalTexture, v_uv0).xyz - vec3(0.5);\n    s.normal =\n      nmmp.x * normalize(v_tangent) +\n      nmmp.y * normalize(v_bitangent) +\n      nmmp.z * normalize(s.normal);\n    s.normal = normalize(s.normal);\n  #endif\n  s.position = v_worldPos;\n  s.viewDirection = v_viewDirection;\n  s.glossiness = glossiness;\n}\nvoid main () {\n  PhongSurface s;\n  surf(s);\n  vec4 color = CCPhongShading(s);\n  gl_FragColor = CCFragOutput(color);\n}"
+      },
+      "builtins": {
+        "globals": {
+          "blocks": [
+            {
+              "name": "CCGlobal",
+              "defines": []
+            },
+            {
+              "name": "CC_SHADOW",
+              "defines": [
+                "CC_USE_SHADOW_MAP",
+                "CC_NUM_SHADOW_LIGHTS"
+              ]
+            },
+            {
+              "name": "CCLIGHTS",
+              "defines": [
+                "CC_NUM_LIGHTS"
+              ]
+            }
+          ],
+          "samplers": [
+            {
+              "name": "cc_shadow_map_0",
+              "defines": [
+                "CC_USE_SHADOW_MAP",
+                "CC_NUM_SHADOW_LIGHTS"
+              ]
+            },
+            {
+              "name": "cc_shadow_map_1",
+              "defines": [
+                "CC_USE_SHADOW_MAP",
+                "CC_NUM_SHADOW_LIGHTS"
+              ]
+            }
+          ]
+        },
+        "locals": {
+          "blocks": [
+            {
+              "name": "CCLocal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        }
+      },
+      "defines": [
+        {
+          "name": "CC_USE_SKINNING",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "CC_USE_JOINTS_TEXTRUE",
+          "type": "boolean",
+          "defines": [
+            "CC_USE_SKINNING"
+          ]
+        },
+        {
+          "name": "CC_JOINTS_TEXTURE_FLOAT32",
+          "type": "boolean",
+          "defines": [
+            "CC_USE_SKINNING",
+            "CC_USE_JOINTS_TEXTRUE"
+          ]
+        },
+        {
+          "name": "CC_USE_ATTRIBUTE_UV0",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "CC_USE_ATTRIBUTE_COLOR",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "CC_USE_ATTRIBUTE_NORMAL",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "CC_USE_ATTRIBUTE_TANGENT",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "CC_USE_SHADOW_MAP",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "CC_NUM_SHADOW_LIGHTS",
+          "type": "number",
+          "defines": [
+            "CC_USE_SHADOW_MAP"
+          ],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "USE_DIFFUSE_TEXTURE",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "USE_NORMAL_TEXTURE",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "OUTPUT_TO_GAMMA",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "USE_ALPHA_TEST",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "USE_SPECULAR",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "USE_SPECULAR_TEXTURE",
+          "type": "boolean",
+          "defines": [
+            "USE_SPECULAR"
+          ]
+        },
+        {
+          "name": "USE_EMISSIVE",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "USE_EMISSIVE_TEXTURE",
+          "type": "boolean",
+          "defines": [
+            "USE_EMISSIVE"
+          ]
+        },
+        {
+          "name": "CC_NUM_LIGHTS",
+          "type": "number",
+          "defines": [],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "CC_LIGHT_0_TYPE",
+          "type": "number",
+          "defines": [
+            "CC_NUM_LIGHTS"
+          ],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "CC_SHADOW_0_TYPE",
+          "type": "number",
+          "defines": [
+            "CC_NUM_LIGHTS",
+            "CC_USE_SHADOW_MAP",
+            "CC_NUM_SHADOW_LIGHTS"
+          ],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "CC_LIGHT_1_TYPE",
+          "type": "number",
+          "defines": [
+            "CC_NUM_LIGHTS"
+          ],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "CC_SHADOW_1_TYPE",
+          "type": "number",
+          "defines": [
+            "CC_NUM_LIGHTS",
+            "CC_USE_SHADOW_MAP",
+            "CC_NUM_SHADOW_LIGHTS"
+          ],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "CC_LIGHT_2_TYPE",
+          "type": "number",
+          "defines": [
+            "CC_NUM_LIGHTS"
+          ],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "CC_SHADOW_2_TYPE",
+          "type": "number",
+          "defines": [
+            "CC_NUM_LIGHTS",
+            "CC_USE_SHADOW_MAP",
+            "CC_NUM_SHADOW_LIGHTS"
+          ],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "CC_LIGHT_3_TYPE",
+          "type": "number",
+          "defines": [
+            "CC_NUM_LIGHTS"
+          ],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "CC_SHADOW_3_TYPE",
+          "type": "number",
+          "defines": [
+            "CC_NUM_LIGHTS",
+            "CC_USE_SHADOW_MAP",
+            "CC_NUM_SHADOW_LIGHTS"
+          ],
+          "range": [
+            0,
+            3
+          ]
+        },
+        {
+          "name": "CC_USE_ALPHA_ATLAS_diffuseTexture",
+          "type": "boolean",
+          "defines": [
+            "USE_DIFFUSE_TEXTURE"
+          ]
+        },
+        {
+          "name": "INPUT_IS_GAMMA",
+          "type": "boolean",
+          "defines": [
+            "USE_DIFFUSE_TEXTURE"
+          ]
+        },
+        {
+          "name": "CC_USE_ALPHA_ATLAS_emissiveTexture",
+          "type": "boolean",
+          "defines": [
+            "USE_EMISSIVE",
+            "USE_EMISSIVE_TEXTURE"
+          ]
+        },
+        {
+          "name": "CC_USE_ALPHA_ATLAS_specularTexture",
+          "type": "boolean",
+          "defines": [
+            "USE_SPECULAR",
+            "USE_SPECULAR_TEXTURE"
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "name": "SKINNING",
+          "members": [
+            {
+              "name": "jointsTextureSize",
+              "type": 14,
+              "count": 1
+            }
+          ],
+          "defines": [
+            "CC_USE_SKINNING",
+            "CC_USE_JOINTS_TEXTRUE"
+          ],
+          "binding": 0
+        },
+        {
+          "name": "JOINT_MATRIX",
+          "members": [
+            {
+              "name": "jointMatrices",
+              "type": 26,
+              "count": 50
+            }
+          ],
+          "defines": [
+            "CC_USE_SKINNING"
+          ],
+          "binding": 1
+        },
+        {
+          "name": "MAIN_TILING",
+          "members": [
+            {
+              "name": "mainTiling",
+              "type": 14,
+              "count": 1
+            },
+            {
+              "name": "mainOffset",
+              "type": 14,
+              "count": 1
+            }
+          ],
+          "defines": [],
+          "binding": 2
+        },
+        {
+          "name": "ALPHA_TEST",
+          "members": [
+            {
+              "name": "alphaThreshold",
+              "type": 13,
+              "count": 1
+            }
+          ],
+          "defines": [
+            "USE_ALPHA_TEST"
+          ],
+          "binding": 3
+        },
+        {
+          "name": "PhongFrag",
+          "members": [
+            {
+              "name": "diffuseColor",
+              "type": 16,
+              "count": 1
+            },
+            {
+              "name": "specularColor",
+              "type": 16,
+              "count": 1
+            },
+            {
+              "name": "emissiveColor",
+              "type": 16,
+              "count": 1
+            },
+            {
+              "name": "glossiness",
+              "type": 13,
+              "count": 1
+            }
+          ],
+          "defines": [],
+          "binding": 4
+        }
+      ],
+      "samplers": [
+        {
+          "name": "jointsTexture",
+          "type": 29,
+          "count": 1,
+          "defines": [
+            "CC_USE_SKINNING",
+            "CC_USE_JOINTS_TEXTRUE"
+          ],
+          "binding": 30
+        },
+        {
+          "name": "diffuseTexture",
+          "type": 29,
+          "count": 1,
+          "defines": [
+            "USE_DIFFUSE_TEXTURE"
+          ],
+          "binding": 31
+        },
+        {
+          "name": "specularTexture",
+          "type": 29,
+          "count": 1,
+          "defines": [
+            "USE_SPECULAR",
+            "USE_SPECULAR_TEXTURE"
+          ],
+          "binding": 32
+        },
+        {
+          "name": "emissiveTexture",
+          "type": 29,
+          "count": 1,
+          "defines": [
+            "USE_EMISSIVE",
+            "USE_EMISSIVE_TEXTURE"
+          ],
+          "binding": 33
+        },
+        {
+          "name": "normalTexture",
+          "type": 29,
+          "count": 1,
+          "defines": [
+            "USE_NORMAL_TEXTURE"
+          ],
+          "binding": 34
+        }
+      ],
+      "record": null,
+      "name": "builtin-phong|phong-vs|phong-fs"
+    },
+    {
+      "hash": 1165371292,
+      "glsl3": {
+        "vert": "\nprecision highp float;\nin vec3 a_position;\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\nuniform CC_SHADOW_MAP {\n  mat4  cc_shadow_map_lightViewProjMatrix;\n  vec4  cc_shadow_map_info;\n  float cc_shadow_map_bias;\n};\nout float v_depth;\n#if CC_USE_SKINNING\n  in vec4 a_weights;\n  in vec4 a_joints;\n  #if CC_USE_JOINTS_TEXTRUE\n    uniform SKINNING {\n      vec2 jointsTextureSize;\n    };\n    uniform sampler2D jointsTexture;\n    #if CC_JOINTS_TEXTURE_FLOAT32\n      mat4 getBoneMatrix(const in float i) {\n        float width = jointsTextureSize.x;\n        float height = jointsTextureSize.y;\n        float j = i * 4.0;\n        float x = mod(j, width);\n        float y = floor(j / width);\n        float dx = 1.0 / width;\n        float dy = 1.0 / height;\n        y = dy * (y + 0.5);\n        vec4 v1 = texture(jointsTexture, vec2(dx * (x + 0.5), y));\n        vec4 v2 = texture(jointsTexture, vec2(dx * (x + 1.5), y));\n        vec4 v3 = texture(jointsTexture, vec2(dx * (x + 2.5), y));\n        vec4 v4 = texture(jointsTexture, vec2(dx * (x + 3.5), y));\n        return mat4(v1, v2, v3, v4);\n      }\n    #else\n      float decode32(vec4 rgba) {\n        float Sign = 1.0 - step(128.0, rgba[0]) * 2.0;\n        float Exponent = 2.0 * mod(rgba[0], 128.0) + step(128.0, rgba[1]) - 127.0;\n        float Mantissa = mod(rgba[1], 128.0) * 65536.0 + rgba[2] * 256.0 + rgba[3] + 8388608.0;\n        return Sign * exp2(Exponent - 23.0) * Mantissa;\n      }\n      vec4 decodevec4 (vec4 x, vec4 y, vec4 z, vec4 w) {\n        return vec4(\n          decode32(x.wzyx * 255.0),\n          decode32(y.wzyx * 255.0),\n          decode32(z.wzyx * 255.0),\n          decode32(w.wzyx * 255.0)\n        );\n      }\n      vec4 decodevec4 (float dx, float x, float y) {\n        return decodevec4(\n          texture(jointsTexture, vec2(dx * (x + 0.5), y)),\n          texture(jointsTexture, vec2(dx * (x + 1.5), y)),\n          texture(jointsTexture, vec2(dx * (x + 2.5), y)),\n          texture(jointsTexture, vec2(dx * (x + 3.5), y))\n        );\n      }\n      mat4 getBoneMatrix(const in float i) {\n        float width = jointsTextureSize.x;\n        float height = jointsTextureSize.y;\n        float j = i * 16.0;\n        float x = mod(j, width);\n        float y = floor(j / width);\n        float dx = 1.0 / width;\n        float dy = 1.0 / height;\n        y = dy * (y + 0.5);\n        vec4 v1 = decodevec4(dx, x,       y);\n        vec4 v2 = decodevec4(dx, x+4.0,   y);\n        vec4 v3 = decodevec4(dx, x+8.0,   y);\n        vec4 v4 = decodevec4(dx, x+12.0,  y);\n        return mat4(v1, v2, v3, v4);\n      }\n    #endif\n  #else\n    uniform JOINT_MATRIX {\n      mat4 jointMatrices[50];\n    };\n    mat4 getBoneMatrix(const in float i) {\n      return jointMatrices[int(i)];\n    }\n  #endif\n    mat4 skinMatrix() {\n      return\n        getBoneMatrix(a_joints.x) * a_weights.x +\n        getBoneMatrix(a_joints.y) * a_weights.y +\n        getBoneMatrix(a_joints.z) * a_weights.z +\n        getBoneMatrix(a_joints.w) * a_weights.w\n        ;\n    }\n#endif\nvoid SKIN_VERTEX(inout vec4 a1) {\n  #if CC_USE_SKINNING\n    mat4 m = skinMatrix();\n    a1 = m * a1;\n  #endif\n}\nvoid SKIN_VERTEX(inout vec4 a1, inout vec4 a2) {\n  #if CC_USE_SKINNING\n    mat4 m = skinMatrix();\n    a1 = m * a1;\n    a2 = m * a2;\n  #endif\n}\nvoid SKIN_VERTEX(inout vec4 a1, inout vec4 a2, inout vec4 a3) {\n  #if CC_USE_SKINNING\n    mat4 m = skinMatrix();\n    a1 = m * a1;\n    a2 = m * a2;\n    a3 = m * a3;\n  #endif\n}\nvoid main () {\n  vec4 position = vec4(a_position, 1);\n  SKIN_VERTEX(position);\n  gl_Position = cc_shadow_map_lightViewProjMatrix * cc_matWorld * position;\n  v_depth = ((gl_Position.z + cc_shadow_map_info.x) / (cc_shadow_map_info.x + cc_shadow_map_info.y)) + cc_shadow_map_bias;\n}",
+        "frag": "\nprecision highp float;\nin float v_depth;\nvec4 packDepthToRGBA(float depth) {\n  vec4 ret = vec4(1.0, 255.0, 65025.0, 160581375.0) * depth;\n  ret = fract(ret);\n  ret -= ret.yzww * vec4(1.0 / 255.0, 1.0 / 255.0, 1.0 / 255.0, 0.0);\n  return ret;\n}\nvoid main () {\n    gl_FragColor = packDepthToRGBA(v_depth);\n}"
+      },
+      "glsl1": {
+        "vert": "\nprecision highp float;\nattribute vec3 a_position;\nuniform mat4 cc_matWorld;\nuniform mat4 cc_shadow_map_lightViewProjMatrix;\nuniform vec4 cc_shadow_map_info;\nuniform float cc_shadow_map_bias;\nvarying float v_depth;\n#if CC_USE_SKINNING\n  attribute vec4 a_weights;\n  attribute vec4 a_joints;\n  #if CC_USE_JOINTS_TEXTRUE\n    uniform vec2 jointsTextureSize;\n    uniform sampler2D jointsTexture;\n    #if CC_JOINTS_TEXTURE_FLOAT32\n      mat4 getBoneMatrix(const in float i) {\n        float width = jointsTextureSize.x;\n        float height = jointsTextureSize.y;\n        float j = i * 4.0;\n        float x = mod(j, width);\n        float y = floor(j / width);\n        float dx = 1.0 / width;\n        float dy = 1.0 / height;\n        y = dy * (y + 0.5);\n        vec4 v1 = texture2D(jointsTexture, vec2(dx * (x + 0.5), y));\n        vec4 v2 = texture2D(jointsTexture, vec2(dx * (x + 1.5), y));\n        vec4 v3 = texture2D(jointsTexture, vec2(dx * (x + 2.5), y));\n        vec4 v4 = texture2D(jointsTexture, vec2(dx * (x + 3.5), y));\n        return mat4(v1, v2, v3, v4);\n      }\n    #else\n      float decode32(vec4 rgba) {\n        float Sign = 1.0 - step(128.0, rgba[0]) * 2.0;\n        float Exponent = 2.0 * mod(rgba[0], 128.0) + step(128.0, rgba[1]) - 127.0;\n        float Mantissa = mod(rgba[1], 128.0) * 65536.0 + rgba[2] * 256.0 + rgba[3] + 8388608.0;\n        return Sign * exp2(Exponent - 23.0) * Mantissa;\n      }\n      vec4 decodevec4 (vec4 x, vec4 y, vec4 z, vec4 w) {\n        return vec4(\n          decode32(x.wzyx * 255.0),\n          decode32(y.wzyx * 255.0),\n          decode32(z.wzyx * 255.0),\n          decode32(w.wzyx * 255.0)\n        );\n      }\n      vec4 decodevec4 (float dx, float x, float y) {\n        return decodevec4(\n          texture2D(jointsTexture, vec2(dx * (x + 0.5), y)),\n          texture2D(jointsTexture, vec2(dx * (x + 1.5), y)),\n          texture2D(jointsTexture, vec2(dx * (x + 2.5), y)),\n          texture2D(jointsTexture, vec2(dx * (x + 3.5), y))\n        );\n      }\n      mat4 getBoneMatrix(const in float i) {\n        float width = jointsTextureSize.x;\n        float height = jointsTextureSize.y;\n        float j = i * 16.0;\n        float x = mod(j, width);\n        float y = floor(j / width);\n        float dx = 1.0 / width;\n        float dy = 1.0 / height;\n        y = dy * (y + 0.5);\n        vec4 v1 = decodevec4(dx, x,       y);\n        vec4 v2 = decodevec4(dx, x+4.0,   y);\n        vec4 v3 = decodevec4(dx, x+8.0,   y);\n        vec4 v4 = decodevec4(dx, x+12.0,  y);\n        return mat4(v1, v2, v3, v4);\n      }\n    #endif\n  #else\n    uniform mat4 jointMatrices[50];\n    mat4 getBoneMatrix(const in float i) {\n      return jointMatrices[int(i)];\n    }\n  #endif\n    mat4 skinMatrix() {\n      return\n        getBoneMatrix(a_joints.x) * a_weights.x +\n        getBoneMatrix(a_joints.y) * a_weights.y +\n        getBoneMatrix(a_joints.z) * a_weights.z +\n        getBoneMatrix(a_joints.w) * a_weights.w\n        ;\n    }\n#endif\nvoid SKIN_VERTEX(inout vec4 a1) {\n  #if CC_USE_SKINNING\n    mat4 m = skinMatrix();\n    a1 = m * a1;\n  #endif\n}\nvoid SKIN_VERTEX(inout vec4 a1, inout vec4 a2) {\n  #if CC_USE_SKINNING\n    mat4 m = skinMatrix();\n    a1 = m * a1;\n    a2 = m * a2;\n  #endif\n}\nvoid SKIN_VERTEX(inout vec4 a1, inout vec4 a2, inout vec4 a3) {\n  #if CC_USE_SKINNING\n    mat4 m = skinMatrix();\n    a1 = m * a1;\n    a2 = m * a2;\n    a3 = m * a3;\n  #endif\n}\nvoid main () {\n  vec4 position = vec4(a_position, 1);\n  SKIN_VERTEX(position);\n  gl_Position = cc_shadow_map_lightViewProjMatrix * cc_matWorld * position;\n  v_depth = ((gl_Position.z + cc_shadow_map_info.x) / (cc_shadow_map_info.x + cc_shadow_map_info.y)) + cc_shadow_map_bias;\n}",
+        "frag": "\nprecision highp float;\nvarying float v_depth;\nvec4 packDepthToRGBA(float depth) {\n  vec4 ret = vec4(1.0, 255.0, 65025.0, 160581375.0) * depth;\n  ret = fract(ret);\n  ret -= ret.yzww * vec4(1.0 / 255.0, 1.0 / 255.0, 1.0 / 255.0, 0.0);\n  return ret;\n}\nvoid main () {\n    gl_FragColor = packDepthToRGBA(v_depth);\n}"
+      },
+      "builtins": {
+        "globals": {
+          "blocks": [
+            {
+              "name": "CC_SHADOW_MAP",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        },
+        "locals": {
+          "blocks": [
+            {
+              "name": "CCLocal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        }
+      },
+      "defines": [
+        {
+          "name": "CC_USE_SKINNING",
+          "type": "boolean",
+          "defines": []
+        },
+        {
+          "name": "CC_USE_JOINTS_TEXTRUE",
+          "type": "boolean",
+          "defines": [
+            "CC_USE_SKINNING"
+          ]
+        },
+        {
+          "name": "CC_JOINTS_TEXTURE_FLOAT32",
+          "type": "boolean",
+          "defines": [
+            "CC_USE_SKINNING",
+            "CC_USE_JOINTS_TEXTRUE"
+          ]
+        }
+      ],
+      "blocks": [
+        {
+          "name": "SKINNING",
+          "members": [
+            {
+              "name": "jointsTextureSize",
+              "type": 14,
+              "count": 1
+            }
+          ],
+          "defines": [
+            "CC_USE_SKINNING",
+            "CC_USE_JOINTS_TEXTRUE"
+          ],
+          "binding": 0
+        },
+        {
+          "name": "JOINT_MATRIX",
+          "members": [
+            {
+              "name": "jointMatrices",
+              "type": 26,
+              "count": 50
+            }
+          ],
+          "defines": [
+            "CC_USE_SKINNING"
+          ],
+          "binding": 1
+        }
+      ],
+      "samplers": [
+        {
+          "name": "jointsTexture",
+          "type": 29,
+          "count": 1,
+          "defines": [
+            "CC_USE_SKINNING",
+            "CC_USE_JOINTS_TEXTRUE"
+          ],
+          "binding": 30
+        }
+      ],
+      "record": null,
+      "name": "builtin-phong|shadow-map-vs|shadow-map-fs"
+    }
+  ]
+}

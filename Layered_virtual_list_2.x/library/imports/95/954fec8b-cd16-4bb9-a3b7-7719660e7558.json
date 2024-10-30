@@ -1,0 +1,215 @@
+{
+  "__type__": "cc.Model",
+  "_name": "primitives",
+  "_objFlags": 0,
+  "_native": "",
+  "_nodes": [
+    {
+      "name": "RootNode",
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "children": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quat": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "path": ""
+    },
+    {
+      "name": "capsule",
+      "scale": [
+        100,
+        100,
+        100
+      ],
+      "mesh": 0,
+      "parent": null,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quat": [
+        8.14603353660459e-8,
+        0,
+        0,
+        1
+      ],
+      "path": "capsule"
+    },
+    {
+      "name": "plane",
+      "scale": [
+        100,
+        100,
+        100
+      ],
+      "mesh": 1,
+      "parent": null,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quat": [
+        8.14603353660459e-8,
+        0,
+        0,
+        1
+      ],
+      "path": "plane"
+    },
+    {
+      "name": "cone",
+      "scale": [
+        100,
+        100,
+        100
+      ],
+      "mesh": 2,
+      "parent": null,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quat": [
+        -0.707106828689575,
+        0,
+        0,
+        0.707106709480286
+      ],
+      "path": "cone"
+    },
+    {
+      "name": "torus",
+      "scale": [
+        100,
+        100,
+        100
+      ],
+      "mesh": 3,
+      "parent": null,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quat": [
+        8.14603353660459e-8,
+        0,
+        0,
+        1
+      ],
+      "path": "torus"
+    },
+    {
+      "name": "sphere",
+      "scale": [
+        100,
+        100,
+        100
+      ],
+      "mesh": 4,
+      "parent": null,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quat": [
+        8.14603353660459e-8,
+        0,
+        0,
+        1
+      ],
+      "path": "sphere"
+    },
+    {
+      "name": "quad",
+      "scale": [
+        100,
+        100,
+        100
+      ],
+      "mesh": 5,
+      "parent": null,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quat": [
+        8.14603353660459e-8,
+        0,
+        0,
+        1
+      ],
+      "path": "quad"
+    },
+    {
+      "name": "cylinder",
+      "scale": [
+        100,
+        100,
+        100
+      ],
+      "mesh": 6,
+      "parent": null,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quat": [
+        8.14603353660459e-8,
+        0,
+        0,
+        1
+      ],
+      "path": "cylinder"
+    },
+    {
+      "name": "box",
+      "scale": [
+        100,
+        100,
+        100
+      ],
+      "mesh": 7,
+      "parent": null,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "quat": [
+        8.14603353660459e-8,
+        0,
+        0,
+        1
+      ],
+      "path": "box"
+    }
+  ],
+  "_precomputeJointMatrix": false
+}

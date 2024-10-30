@@ -1,0 +1,90 @@
+[
+  {
+    "__type__": "cc.Mesh",
+    "_name": "",
+    "_objFlags": 0,
+    "_native": ".bin",
+    "_vertexBundles": [
+      {
+        "__id__": 1
+      }
+    ],
+    "_primitives": [
+      {
+        "__id__": 6
+      }
+    ],
+    "_minPos": {
+      "__type__": "cc.Vec3",
+      "x": -0.5,
+      "y": -0.5,
+      "z": -0.499999940395355
+    },
+    "_maxPos": {
+      "__type__": "cc.Vec3",
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0.5
+    }
+  },
+  {
+    "__type__": "cc.mesh.VertexBundle",
+    "data": {
+      "__id__": 2
+    },
+    "formats": [
+      {
+        "__id__": 3
+      },
+      {
+        "__id__": 4
+      },
+      {
+        "__id__": 5
+      }
+    ],
+    "verticesCount": 129
+  },
+  {
+    "__type__": "cc.BufferRange",
+    "offset": 0,
+    "length": 4128
+  },
+  {
+    "__type__": "cc.mesh.VertexFormat",
+    "name": "a_normal",
+    "type": 5126,
+    "num": 3,
+    "normalize": false
+  },
+  {
+    "__type__": "cc.mesh.VertexFormat",
+    "name": "a_position",
+    "type": 5126,
+    "num": 3,
+    "normalize": false
+  },
+  {
+    "__type__": "cc.mesh.VertexFormat",
+    "name": "a_uv0",
+    "type": 5126,
+    "num": 2,
+    "normalize": false
+  },
+  {
+    "__type__": "cc.mesh.Primitive",
+    "vertexBundleIndices": [
+      0
+    ],
+    "data": {
+      "__id__": 7
+    },
+    "indexUnit": 5123,
+    "topology": 4
+  },
+  {
+    "__type__": "cc.BufferRange",
+    "offset": 4128,
+    "length": 384
+  }
+]

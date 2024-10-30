@@ -1,0 +1,15 @@
+{
+  "__type__": "cc.Material",
+  "_name": "builtin-2d-graphics",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "30682f87-9f0d-4f17-8a44-72863791461b"
+  },
+  "_techniqueIndex": 0,
+  "_techniqueData": {
+    "0": {
+      "defines": {}
+    }
+  }
+}

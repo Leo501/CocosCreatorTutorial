@@ -1,0 +1,28 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "default_toggle_checkmark",
+    "texture": "73a0903d-d80e-4e3c-aa67-f999543c08f5",
+    "atlas": "",
+    "rect": [
+      4,
+      5,
+      20,
+      18
+    ],
+    "offset": [
+      0,
+      0
+    ],
+    "originalSize": [
+      28,
+      28
+    ],
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "__type__": "cc.EffectAsset",
+  "_name": "__builtin-editor-gizmo",
+  "_objFlags": 0,
+  "_native": "",
+  "properties": null,
+  "techniques": [
+    {
+      "passes": [
+        {
+          "stage": "transparent",
+          "blendState": {
+            "targets": [
+              {
+                "blend": true,
+                "blendEq": 32774,
+                "blendAlphaEq": 32774,
+                "blendSrcAlpha": 1,
+                "blendDstAlpha": 771
+              }
+            ]
+          },
+          "rasterizerState": {
+            "cullMode": 0
+          },
+          "depthStencilState": {
+            "depthTest": false,
+            "depthWrite": false
+          },
+          "properties": {
+            "diffuseColor": {
+              "value": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "editor": {
+                "type": "color"
+              },
+              "type": 16
+            }
+          },
+          "program": "__builtin-editor-gizmo|vs|fs"
+        }
+      ]
+    }
+  ],
+  "shaders": [
+    {
+      "hash": 2992916359,
+      "glsl3": {
+        "vert": "\nprecision highp float;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\nvarying vec3 v_worldNormal;\nvarying vec3 v_worldPosition;\nvarying vec3 v_localPosition;\nvarying vec3 v_right;\nvarying vec3 v_up;\nvarying vec3 v_forward;\nattribute vec3 a_position;\nattribute vec3 a_normal;\nvoid main () {\n  vec4 pos = vec4(a_position, 1);\n  v_localPosition = a_position;\n  v_worldPosition = (cc_matWorld * pos).xyz;\n  v_worldNormal = (cc_matWorldIT * vec4(a_normal, 0)).xyz;\n  v_right = vec3(cc_matView[0][0], cc_matView[1][0], cc_matView[2][0]);\n  v_up = vec3(cc_matView[0][1], cc_matView[1][1], cc_matView[2][1]);\n  v_forward = vec3(cc_matView[0][2], cc_matView[1][2], cc_matView[2][2]);\n  gl_Position = cc_matViewProj * cc_matWorld * pos;\n}",
+        "frag": "\nprecision highp float;\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\nmat3 transpose(mat3 v) {\n    mat3 tmp;\n    tmp[0] = vec3(v[0].x, v[1].x, v[2].x);\n    tmp[1] = vec3(v[0].y, v[1].y, v[2].y);\n    tmp[2] = vec3(v[0].z, v[1].z, v[2].z);\n    return tmp;\n}\nvoid ClipQuadToHorizon(inout vec3 L[5], out int n) {\n    int config = 0;\n    if (L[0].z > 0.0) config += 1;\n    if (L[1].z > 0.0) config += 2;\n    if (L[2].z > 0.0) config += 4;\n    if (L[3].z > 0.0) config += 8;\n    config = 15;\n    n = 0;\n    if (config == 0)\n    {\n    }\n    else if (config == 1)\n    {\n        n = 3;\n        L[1] = -L[1].z * L[0] + L[0].z * L[1];\n        L[2] = -L[3].z * L[0] + L[0].z * L[3];\n    }\n    else if (config == 2)\n    {\n        n = 3;\n        L[0] = -L[0].z * L[1] + L[1].z * L[0];\n        L[2] = -L[2].z * L[1] + L[1].z * L[2];\n    }\n    else if (config == 3)\n    {\n        n = 4;\n        L[2] = -L[2].z * L[1] + L[1].z * L[2];\n        L[3] = -L[3].z * L[0] + L[0].z * L[3];\n    }\n    else if (config == 4)\n    {\n        n = 3;\n        L[0] = -L[3].z * L[2] + L[2].z * L[3];\n        L[1] = -L[1].z * L[2] + L[2].z * L[1];\n    }\n    else if (config == 5)\n    {\n        n = 0;\n    }\n    else if (config == 6)\n    {\n        n = 4;\n        L[0] = -L[0].z * L[1] + L[1].z * L[0];\n        L[3] = -L[3].z * L[2] + L[2].z * L[3];\n    }\n    else if (config == 7)\n    {\n        n = 5;\n        L[4] = -L[3].z * L[0] + L[0].z * L[3];\n        L[3] = -L[3].z * L[2] + L[2].z * L[3];\n    }\n    else if (config == 8)\n    {\n        n = 3;\n        L[0] = -L[0].z * L[3] + L[3].z * L[0];\n        L[1] = -L[2].z * L[3] + L[3].z * L[2];\n        L[2] =  L[3];\n    }\n    else if (config == 9)\n    {\n        n = 4;\n        L[1] = -L[1].z * L[0] + L[0].z * L[1];\n        L[2] = -L[2].z * L[3] + L[3].z * L[2];\n    }\n    else if (config == 10)\n    {\n        n = 0;\n    }\n    else if (config == 11)\n    {\n        n = 5;\n        L[4] = L[3];\n        L[3] = -L[2].z * L[3] + L[3].z * L[2];\n        L[2] = -L[2].z * L[1] + L[1].z * L[2];\n    }\n    else if (config == 12)\n    {\n        n = 4;\n        L[1] = -L[1].z * L[2] + L[2].z * L[1];\n        L[0] = -L[0].z * L[3] + L[3].z * L[0];\n    }\n    else if (config == 13)\n    {\n        n = 5;\n        L[4] = L[3];\n        L[3] = L[2];\n        L[2] = -L[1].z * L[2] + L[2].z * L[1];\n        L[1] = -L[1].z * L[0] + L[0].z * L[1];\n    }\n    else if (config == 14)\n    {\n        n = 5;\n        L[4] = -L[0].z * L[3] + L[3].z * L[0];\n        L[0] = -L[0].z * L[1] + L[1].z * L[0];\n    }\n    else if (config == 15)\n    {\n        n = 4;\n    }\n    if (n == 3)\n        L[3] = L[0];\n    if (n == 4)\n        L[4] = L[0];\n}\nfloat IntegrateEdge(vec3 v1, vec3 v2) {\n    float cosTheta = dot(v1, v2);\n    float theta = acos(cosTheta);\n    return cross(v1, v2).z * ((theta > 0.001) ? theta/sin(theta) : 4.0);\n}\nvec3 LTC_Evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4]) {\n    vec3 T1, T2;\n    T1 = normalize(V - N*dot(V, N));\n    T2 = cross(N, T1);\n    Minv = Minv * transpose(mat3(T1, T2, N));\n    vec3 L[5];\n    L[0] = Minv * (points[0] - P);\n    L[1] = Minv * (points[1] - P);\n    L[2] = Minv * (points[2] - P);\n    L[3] = Minv * (points[3] - P);\n    int n;\n    ClipQuadToHorizon(L, n);\n    if (n == 0)\n        return vec3(0, 0, 0);\n    L[0] = normalize(L[0]);\n    L[1] = normalize(L[1]);\n    L[2] = normalize(L[2]);\n    L[3] = normalize(L[3]);\n    L[4] = normalize(L[4]);\n    float sum = 0.0;\n    sum += IntegrateEdge(L[0], L[1]);\n    sum += IntegrateEdge(L[1], L[2]);\n    sum += IntegrateEdge(L[2], L[3]);\n    if (n >= 4)\n        sum += IntegrateEdge(L[3], L[4]);\n    if (n == 5)\n        sum += IntegrateEdge(L[4], L[0]);\n    sum = max(0.0, sum);\n    vec3 Lo_i = vec3(sum, sum, sum);\n    return Lo_i;\n}\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nuniform DIFFUSE_COLOR {\n  vec4 diffuseColor;\n};\nvarying vec3 v_worldNormal;\nvarying vec3 v_worldPosition;\nvarying vec3 v_localPosition;\nvarying vec3 v_right;\nvarying vec3 v_up;\nvarying vec3 v_forward;\nvoid main () {\n  vec3 N = normalize(v_worldNormal);\n  vec3 V = normalize(cc_cameraPos.xyz - v_worldPosition);\n  vec3 points[4];\n  vec3 up = vec3(0, 1, 0);\n  points[0] = (v_forward * 3.0 + v_right + up) * 40.0;\n  points[1] = (v_forward * 3.0 - v_right + up) * 40.0;\n  points[2] = (v_forward * 3.0 - v_right - up) * 40.0;\n  points[3] = (v_forward * 3.0 + v_right - up) * 40.0;\n  vec3 diffuse = diffuseColor.rgb * (0.2 + LTC_Evaluate(N, V, v_localPosition, mat3(1), points) * 0.8);\n  gl_FragColor = CCFragOutput(vec4(diffuse, diffuseColor.a));\n}"
+      },
+      "glsl1": {
+        "vert": "\nprecision highp float;\nuniform mat4 cc_matView;\nuniform mat4 cc_matViewProj;\nuniform mat4 cc_matWorld;\nuniform mat4 cc_matWorldIT;\nvarying vec3 v_worldNormal;\nvarying vec3 v_worldPosition;\nvarying vec3 v_localPosition;\nvarying vec3 v_right;\nvarying vec3 v_up;\nvarying vec3 v_forward;\nattribute vec3 a_position;\nattribute vec3 a_normal;\nvoid main () {\n  vec4 pos = vec4(a_position, 1);\n  v_localPosition = a_position;\n  v_worldPosition = (cc_matWorld * pos).xyz;\n  v_worldNormal = (cc_matWorldIT * vec4(a_normal, 0)).xyz;\n  v_right = vec3(cc_matView[0][0], cc_matView[1][0], cc_matView[2][0]);\n  v_up = vec3(cc_matView[0][1], cc_matView[1][1], cc_matView[2][1]);\n  v_forward = vec3(cc_matView[0][2], cc_matView[1][2], cc_matView[2][2]);\n  gl_Position = cc_matViewProj * cc_matWorld * pos;\n}",
+        "frag": "\nprecision highp float;\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\nmat3 transpose(mat3 v) {\n    mat3 tmp;\n    tmp[0] = vec3(v[0].x, v[1].x, v[2].x);\n    tmp[1] = vec3(v[0].y, v[1].y, v[2].y);\n    tmp[2] = vec3(v[0].z, v[1].z, v[2].z);\n    return tmp;\n}\nvoid ClipQuadToHorizon(inout vec3 L[5], out int n) {\n    int config = 0;\n    if (L[0].z > 0.0) config += 1;\n    if (L[1].z > 0.0) config += 2;\n    if (L[2].z > 0.0) config += 4;\n    if (L[3].z > 0.0) config += 8;\n    config = 15;\n    n = 0;\n    if (config == 0)\n    {\n    }\n    else if (config == 1)\n    {\n        n = 3;\n        L[1] = -L[1].z * L[0] + L[0].z * L[1];\n        L[2] = -L[3].z * L[0] + L[0].z * L[3];\n    }\n    else if (config == 2)\n    {\n        n = 3;\n        L[0] = -L[0].z * L[1] + L[1].z * L[0];\n        L[2] = -L[2].z * L[1] + L[1].z * L[2];\n    }\n    else if (config == 3)\n    {\n        n = 4;\n        L[2] = -L[2].z * L[1] + L[1].z * L[2];\n        L[3] = -L[3].z * L[0] + L[0].z * L[3];\n    }\n    else if (config == 4)\n    {\n        n = 3;\n        L[0] = -L[3].z * L[2] + L[2].z * L[3];\n        L[1] = -L[1].z * L[2] + L[2].z * L[1];\n    }\n    else if (config == 5)\n    {\n        n = 0;\n    }\n    else if (config == 6)\n    {\n        n = 4;\n        L[0] = -L[0].z * L[1] + L[1].z * L[0];\n        L[3] = -L[3].z * L[2] + L[2].z * L[3];\n    }\n    else if (config == 7)\n    {\n        n = 5;\n        L[4] = -L[3].z * L[0] + L[0].z * L[3];\n        L[3] = -L[3].z * L[2] + L[2].z * L[3];\n    }\n    else if (config == 8)\n    {\n        n = 3;\n        L[0] = -L[0].z * L[3] + L[3].z * L[0];\n        L[1] = -L[2].z * L[3] + L[3].z * L[2];\n        L[2] =  L[3];\n    }\n    else if (config == 9)\n    {\n        n = 4;\n        L[1] = -L[1].z * L[0] + L[0].z * L[1];\n        L[2] = -L[2].z * L[3] + L[3].z * L[2];\n    }\n    else if (config == 10)\n    {\n        n = 0;\n    }\n    else if (config == 11)\n    {\n        n = 5;\n        L[4] = L[3];\n        L[3] = -L[2].z * L[3] + L[3].z * L[2];\n        L[2] = -L[2].z * L[1] + L[1].z * L[2];\n    }\n    else if (config == 12)\n    {\n        n = 4;\n        L[1] = -L[1].z * L[2] + L[2].z * L[1];\n        L[0] = -L[0].z * L[3] + L[3].z * L[0];\n    }\n    else if (config == 13)\n    {\n        n = 5;\n        L[4] = L[3];\n        L[3] = L[2];\n        L[2] = -L[1].z * L[2] + L[2].z * L[1];\n        L[1] = -L[1].z * L[0] + L[0].z * L[1];\n    }\n    else if (config == 14)\n    {\n        n = 5;\n        L[4] = -L[0].z * L[3] + L[3].z * L[0];\n        L[0] = -L[0].z * L[1] + L[1].z * L[0];\n    }\n    else if (config == 15)\n    {\n        n = 4;\n    }\n    if (n == 3)\n        L[3] = L[0];\n    if (n == 4)\n        L[4] = L[0];\n}\nfloat IntegrateEdge(vec3 v1, vec3 v2) {\n    float cosTheta = dot(v1, v2);\n    float theta = acos(cosTheta);\n    return cross(v1, v2).z * ((theta > 0.001) ? theta/sin(theta) : 4.0);\n}\nvec3 LTC_Evaluate(vec3 N, vec3 V, vec3 P, mat3 Minv, vec3 points[4]) {\n    vec3 T1, T2;\n    T1 = normalize(V - N*dot(V, N));\n    T2 = cross(N, T1);\n    Minv = Minv * transpose(mat3(T1, T2, N));\n    vec3 L[5];\n    L[0] = Minv * (points[0] - P);\n    L[1] = Minv * (points[1] - P);\n    L[2] = Minv * (points[2] - P);\n    L[3] = Minv * (points[3] - P);\n    int n;\n    ClipQuadToHorizon(L, n);\n    if (n == 0)\n        return vec3(0, 0, 0);\n    L[0] = normalize(L[0]);\n    L[1] = normalize(L[1]);\n    L[2] = normalize(L[2]);\n    L[3] = normalize(L[3]);\n    L[4] = normalize(L[4]);\n    float sum = 0.0;\n    sum += IntegrateEdge(L[0], L[1]);\n    sum += IntegrateEdge(L[1], L[2]);\n    sum += IntegrateEdge(L[2], L[3]);\n    if (n >= 4)\n        sum += IntegrateEdge(L[3], L[4]);\n    if (n == 5)\n        sum += IntegrateEdge(L[4], L[0]);\n    sum = max(0.0, sum);\n    vec3 Lo_i = vec3(sum, sum, sum);\n    return Lo_i;\n}\nuniform vec4 cc_cameraPos;\nuniform vec4 diffuseColor;\nvarying vec3 v_worldNormal;\nvarying vec3 v_worldPosition;\nvarying vec3 v_localPosition;\nvarying vec3 v_right;\nvarying vec3 v_up;\nvarying vec3 v_forward;\nvoid main () {\n  vec3 N = normalize(v_worldNormal);\n  vec3 V = normalize(cc_cameraPos.xyz - v_worldPosition);\n  vec3 points[4];\n  vec3 up = vec3(0, 1, 0);\n  points[0] = (v_forward * 3.0 + v_right + up) * 40.0;\n  points[1] = (v_forward * 3.0 - v_right + up) * 40.0;\n  points[2] = (v_forward * 3.0 - v_right - up) * 40.0;\n  points[3] = (v_forward * 3.0 + v_right - up) * 40.0;\n  vec3 diffuse = diffuseColor.rgb * (0.2 + LTC_Evaluate(N, V, v_localPosition, mat3(1), points) * 0.8);\n  gl_FragColor = CCFragOutput(vec4(diffuse, diffuseColor.a));\n}"
+      },
+      "builtins": {
+        "globals": {
+          "blocks": [
+            {
+              "name": "CCGlobal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        },
+        "locals": {
+          "blocks": [
+            {
+              "name": "CCLocal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        }
+      },
+      "defines": [
+        {
+          "name": "OUTPUT_TO_GAMMA",
+          "type": "boolean",
+          "defines": []
+        }
+      ],
+      "blocks": [
+        {
+          "name": "DIFFUSE_COLOR",
+          "members": [
+            {
+              "name": "diffuseColor",
+              "type": 16,
+              "count": 1
+            }
+          ],
+          "defines": [],
+          "binding": 0
+        }
+      ],
+      "samplers": [],
+      "record": null,
+      "name": "__builtin-editor-gizmo|vs|fs"
+    }
+  ]
+}

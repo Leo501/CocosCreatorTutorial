@@ -1,0 +1,103 @@
+{
+  "__type__": "cc.EffectAsset",
+  "_name": "__builtin-editor-gizmo-unlit",
+  "_objFlags": 0,
+  "_native": "",
+  "properties": null,
+  "techniques": [
+    {
+      "passes": [
+        {
+          "stage": "transparent",
+          "blendState": {
+            "targets": [
+              {
+                "blend": true,
+                "blendEq": 32774
+              }
+            ]
+          },
+          "rasterizerState": {
+            "cullMode": 0
+          },
+          "depthStencilState": {
+            "depthTest": false,
+            "depthWrite": false
+          },
+          "properties": {
+            "diffuseColor": {
+              "value": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "editor": {
+                "type": "color"
+              },
+              "type": 16
+            }
+          },
+          "program": "__builtin-editor-gizmo-unlit|gizmo-unlit-vs|gizmo-unlit-fs:front"
+        }
+      ]
+    }
+  ],
+  "shaders": [
+    {
+      "hash": 304964736,
+      "glsl3": {
+        "vert": "\nprecision highp float;\nattribute vec3 a_position;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\nvoid main () {\n  gl_Position = cc_matViewProj * cc_matWorld * vec4(a_position, 1);\n}",
+        "frag": "\nprecision highp float;\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\nuniform DIFFUSE_COLOR {\n  vec4 diffuseColor;\n};\nvec4 front() {\n  return CCFragOutput(diffuseColor);\n}\nout vec4 cc_FragColor;\nvoid main() { cc_FragColor = front(); }"
+      },
+      "glsl1": {
+        "vert": "\nprecision highp float;\nattribute vec3 a_position;\nuniform mat4 cc_matViewProj;\nuniform mat4 cc_matWorld;\nvoid main () {\n  gl_Position = cc_matViewProj * cc_matWorld * vec4(a_position, 1);\n}",
+        "frag": "\nprecision highp float;\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\nuniform vec4 diffuseColor;\nvec4 front() {\n  return CCFragOutput(diffuseColor);\n}\nvoid main() { gl_FragColor = front(); }"
+      },
+      "builtins": {
+        "globals": {
+          "blocks": [
+            {
+              "name": "CCGlobal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        },
+        "locals": {
+          "blocks": [
+            {
+              "name": "CCLocal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        }
+      },
+      "defines": [
+        {
+          "name": "OUTPUT_TO_GAMMA",
+          "type": "boolean",
+          "defines": []
+        }
+      ],
+      "blocks": [
+        {
+          "name": "DIFFUSE_COLOR",
+          "members": [
+            {
+              "name": "diffuseColor",
+              "type": 16,
+              "count": 1
+            }
+          ],
+          "defines": [],
+          "binding": 0
+        }
+      ],
+      "samplers": [],
+      "record": null,
+      "name": "__builtin-editor-gizmo-unlit|gizmo-unlit-vs|gizmo-unlit-fs:front"
+    }
+  ]
+}

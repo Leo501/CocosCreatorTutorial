@@ -1,0 +1,194 @@
+{
+  "__type__": "cc.EffectAsset",
+  "_name": "__builtin-editor-gizmo-line",
+  "_objFlags": 0,
+  "_native": "",
+  "properties": null,
+  "techniques": [
+    {
+      "passes": [
+        {
+          "stage": "transparent",
+          "blendState": {
+            "targets": [
+              {
+                "blend": true,
+                "blendEq": 32774,
+                "blendSrc": 770,
+                "blendDst": 1
+              }
+            ]
+          },
+          "rasterizerState": {
+            "cullMode": 0
+          },
+          "depthStencilState": {
+            "depthTest": true
+          },
+          "properties": {
+            "diffuseColor": {
+              "value": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "editor": {
+                "type": "color"
+              },
+              "type": 16
+            }
+          },
+          "program": "__builtin-editor-gizmo-line|gizmo-line-vs|gizmo-line-fs:front"
+        },
+        {
+          "stage": "transparent",
+          "blendState": {
+            "targets": [
+              {
+                "blend": true,
+                "blendEq": 32774,
+                "blendSrc": 770,
+                "blendDst": 1
+              }
+            ]
+          },
+          "rasterizerState": {
+            "cullMode": 0
+          },
+          "depthStencilState": {
+            "depthTest": true,
+            "depthFunc": 516
+          },
+          "properties": {
+            "diffuseColor": {
+              "value": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "editor": {
+                "type": "color"
+              },
+              "type": 16
+            }
+          },
+          "program": "__builtin-editor-gizmo-line|gizmo-line-vs|gizmo-line-fs:back"
+        }
+      ]
+    }
+  ],
+  "shaders": [
+    {
+      "hash": 2579669062,
+      "glsl3": {
+        "vert": "\nprecision highp float;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\nattribute vec3 a_position;\nvoid main () {\n  gl_Position = cc_matViewProj * cc_matWorld * vec4(a_position, 1);\n  gl_Position.z -= 0.0001;\n}",
+        "frag": "\nprecision highp float;\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\nuniform DIFFUSE_COLOR {\n  vec4 diffuseColor;\n};\nvec4 front() {\n  return CCFragOutput(diffuseColor);\n}\nout vec4 cc_FragColor;\nvoid main() { cc_FragColor = front(); }"
+      },
+      "glsl1": {
+        "vert": "\nprecision highp float;\nuniform mat4 cc_matViewProj;\nuniform mat4 cc_matWorld;\nattribute vec3 a_position;\nvoid main () {\n  gl_Position = cc_matViewProj * cc_matWorld * vec4(a_position, 1);\n  gl_Position.z -= 0.0001;\n}",
+        "frag": "\nprecision highp float;\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\nuniform vec4 diffuseColor;\nvec4 front() {\n  return CCFragOutput(diffuseColor);\n}\nvoid main() { gl_FragColor = front(); }"
+      },
+      "builtins": {
+        "globals": {
+          "blocks": [
+            {
+              "name": "CCGlobal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        },
+        "locals": {
+          "blocks": [
+            {
+              "name": "CCLocal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        }
+      },
+      "defines": [
+        {
+          "name": "OUTPUT_TO_GAMMA",
+          "type": "boolean",
+          "defines": []
+        }
+      ],
+      "blocks": [
+        {
+          "name": "DIFFUSE_COLOR",
+          "members": [
+            {
+              "name": "diffuseColor",
+              "type": 16,
+              "count": 1
+            }
+          ],
+          "defines": [],
+          "binding": 0
+        }
+      ],
+      "samplers": [],
+      "record": null,
+      "name": "__builtin-editor-gizmo-line|gizmo-line-vs|gizmo-line-fs:front"
+    },
+    {
+      "hash": 2538316070,
+      "glsl3": {
+        "vert": "\nprecision highp float;\nuniform CCGlobal {\n  mat4 cc_matView;\n  mat4 cc_matViewInv;\n  mat4 cc_matProj;\n  mat4 cc_matProjInv;\n  mat4 cc_matViewProj;\n  mat4 cc_matViewProjInv;\n  vec4 cc_cameraPos;\n  vec4 cc_time;\n  mediump vec4 cc_screenSize;\n  mediump vec4 cc_screenScale;\n};\nuniform CCLocal {\n  mat4 cc_matWorld;\n  mat4 cc_matWorldIT;\n};\nattribute vec3 a_position;\nvoid main () {\n  gl_Position = cc_matViewProj * cc_matWorld * vec4(a_position, 1);\n  gl_Position.z -= 0.0001;\n}",
+        "frag": "\nprecision highp float;\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\nuniform DIFFUSE_COLOR {\n  vec4 diffuseColor;\n};\nvec4 back() {\n  return CCFragOutput(vec4(diffuseColor.rgb, diffuseColor.a * 0.2));\n}\nout vec4 cc_FragColor;\nvoid main() { cc_FragColor = back(); }"
+      },
+      "glsl1": {
+        "vert": "\nprecision highp float;\nuniform mat4 cc_matViewProj;\nuniform mat4 cc_matWorld;\nattribute vec3 a_position;\nvoid main () {\n  gl_Position = cc_matViewProj * cc_matWorld * vec4(a_position, 1);\n  gl_Position.z -= 0.0001;\n}",
+        "frag": "\nprecision highp float;\nvec4 CCFragOutput (vec4 color) {\n  #if OUTPUT_TO_GAMMA\n    color.rgb = sqrt(color.rgb);\n  #endif\n\treturn color;\n}\nuniform vec4 diffuseColor;\nvec4 back() {\n  return CCFragOutput(vec4(diffuseColor.rgb, diffuseColor.a * 0.2));\n}\nvoid main() { gl_FragColor = back(); }"
+      },
+      "builtins": {
+        "globals": {
+          "blocks": [
+            {
+              "name": "CCGlobal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        },
+        "locals": {
+          "blocks": [
+            {
+              "name": "CCLocal",
+              "defines": []
+            }
+          ],
+          "samplers": []
+        }
+      },
+      "defines": [
+        {
+          "name": "OUTPUT_TO_GAMMA",
+          "type": "boolean",
+          "defines": []
+        }
+      ],
+      "blocks": [
+        {
+          "name": "DIFFUSE_COLOR",
+          "members": [
+            {
+              "name": "diffuseColor",
+              "type": 16,
+              "count": 1
+            }
+          ],
+          "defines": [],
+          "binding": 0
+        }
+      ],
+      "samplers": [],
+      "record": null,
+      "name": "__builtin-editor-gizmo-line|gizmo-line-vs|gizmo-line-fs:back"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "__type__": "cc.Material",
+  "_name": "builtin-unlit",
+  "_objFlags": 0,
+  "_native": "",
+  "_effectAsset": {
+    "__uuid__": "6d91e591-4ce0-465c-809f-610ec95019c6"
+  },
+  "_techniqueData": {
+    "0": {
+      "props": {
+        "diffuseTexture": {
+          "__uuid__": "0275e94c-56a7-410f-bd1a-fc7483f7d14a"
+        }
+      },
+      "defines": {
+        "USE_DIFFUSE_TEXTURE": true
+      }
+    }
+  }
+}
